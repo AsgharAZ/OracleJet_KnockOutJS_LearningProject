@@ -1,20 +1,9 @@
 
-define(['../accUtils'],
- function(accUtils) {
-    function AboutViewModel() {
-      this.connected = () => {
-        accUtils.announce('About page loaded.', 'assertive');
-        document.title = "About";
-        // Implement further logic if needed
-      };
-      this.disconnected = () => {
-      };
-
-      this.transitionCompleted = () => {
-      };
-    }
-
-
-    return AboutViewModel;
+define([], function() {
+  function VerificationViewModel(params) {
+    this.nextStep = params.nextStep;
+    this.prevStep = params.prevStep;
+    // Add any observables or logic for verification here
   }
-);
+  return VerificationViewModel;
+});

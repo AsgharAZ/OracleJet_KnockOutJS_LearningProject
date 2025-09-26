@@ -1,8 +1,96 @@
 <div class="dashboard-bg-wrapper">
-  <div class="dashboard-content-box oj-hybrid-padding">
-    <h1>Dashboard Content Area</h1>
-    <div>
-        To change the content of this section, you will make edits to the dashboard.html file located in the /js/views folder.
+  <div class="dashboard-content-box oj-hybrid-padding" style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;">
+    
+    <!-- Wizard progress indicator -->
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 28px; font-size: 0.95rem; color: #666; width: 100%; max-width: 900px;">
+      <!-- Stage 1 -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <span style="display:inline-flex; align-items:center; justify-content:center;
+                        width:32px; height:32px; border-radius:50%; background:#fff;
+                        border:2px solid #6e1e7d; color:#6e1e7d; font-weight:700; font-size:1.1rem;">
+            1
+          </span>
+          <div style="width:20px; height:3px; background:lightgreen; margin-top:6px;"></div>
+        </div>
+        <span style="font-weight:600; color:#6e1e7d;">Account Type</span>
+      </div>
+      <div style="flex:0 0 32px; height:2px; background:#bbb; margin:0 8px;"></div>
+      <!-- Stage 2 -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="display:inline-flex; align-items:center; justify-content:center;
+                      width:32px; height:32px; border-radius:50%; background:#f0f0f0;
+                      border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">2</span>
+        <span style="font-weight:600; color:#333;">Account Details</span>
+      </div>
+      <div style="flex:0 0 32px; height:2px; background:#bbb; margin:0 8px;"></div>
+      <!-- Stage 3 -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="display:inline-flex; align-items:center; justify-content:center;
+                      width:32px; height:32px; border-radius:50%; background:#f0f0f0;
+                      border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">3</span>
+        <span style="font-weight:600; color:#333;">Verification</span>
+      </div>
+      <div style="flex:0 0 32px; height:2px; background:#bbb; margin:0 8px;"></div>
+      <!-- Stage 4 -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="display:inline-flex; align-items:center; justify-content:center;
+                      width:32px; height:32px; border-radius:50%; background:#f0f0f0;
+                      border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">4</span>
+        <span style="font-weight:600; color:#333;">Login Details</span>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div style="display: flex; flex-direction: row; width: 100%; max-width: 900px;">
+
+      <!-- Left panel -->
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+        <!-- Title -->
+        <h2 style="font-size: 1.6rem; text-align: left; font-weight: 700; margin-bottom: 18px; color:#333;">
+          Enter Account Details
+        </h2>
+
+        <!-- Tabs (Account Number / IBAN) -->
+        <div style="display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid #eee; width: 100%; max-width: 400px;">
+          <button type="button" style="flex:1; padding:10px; font-size:1rem; font-weight:600; color:#6e1e7d; border:none; border-bottom:3px solid #6e1e7d; background:#fff; cursor:pointer;">
+            Account Number
+          </button>
+          <button type="button" style="flex:1; padding:10px; font-size:1rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer;">
+            IBAN
+          </button>
+        </div>
+
+        <!-- Account Number Input -->
+        <div style="margin-bottom: 20px; width: 100%; max-width: 400px;">
+          <label for="accountNumber" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
+            Account Number
+          </label>
+          <input id="accountNumber" type="text" placeholder="XXXXX-XXXXXXXXX" style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
+          <div style="font-size: 0.8rem; color:#666; margin-top:6px;">
+            Please enter your 14 digit Account Number
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div style="display:flex; justify-content: flex-start; gap: 18px; margin-top: 28px; width: 100%; max-width: 400px;">
+          <button type="button" style="background:#f2f2f2; color:#333; border:none; border-radius: 10px; padding: 14px 36px; font-size: 1rem; font-weight: 600; cursor: pointer;">Back</button>
+          <button type="button" style="background:#6e1e7d; color:#fff; border:none; border-radius: 10px; padding: 14px 48px; font-size: 1rem; font-weight: 600; cursor: pointer;">Next</button>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div style="flex: 1; display: flex; justify-content: center; align-items: flex-start; margin-top:35px;">
+        <div style="border:1px solid #ddd; border-radius: 12px; padding: 16px; background:#fff; width: 260px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+          <img src="../../css/images/cheque_sample.png" alt="Cheque Guidance" style="width:100%; border-radius:8px; margin-bottom:12px;">
+          <div style="font-size: 1rem; font-weight: 600; color:#6e1e7d; margin-bottom:1px;">
+            How to find your Account Number?
+          </div>
+          <div style="font-size: 0.9rem; color:#333; line-height:1.4;">
+            The simplest way of finding your Account Number is to look for it on your chequebook.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

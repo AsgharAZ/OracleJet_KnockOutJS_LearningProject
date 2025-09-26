@@ -48,3 +48,13 @@ html[dir="rtl"] .demo-oracle-icon {
       transform:translate(-25%, -25%) scale(0.5)
   }
 }
+
+.selectSingleStyle {
+  max-width: 20em;
+}
+
+.chartStyle {
+  max-width: 500px;
+  width: 100%;
+  height: 350px;
+}
