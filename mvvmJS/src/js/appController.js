@@ -34,8 +34,8 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       this.mdScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
 
       let navData = [
-          { path: '', redirect: 'Account_Details' },
-          { path: 'Account_Details', detail: { label: 'Login', iconClass: 'oj-ux-ico-contact-group' } },
+          { path: '', redirect: 'Login_Page' },
+          { path: 'Login_Page', detail: { label: 'Login', iconClass: 'oj-ux-ico-contact-group' } },
           { path: 'ForgetPassword', detail: { label: 'Password Recovery', iconClass: 'oj-ux-ico-lock' } }
       ];
 
