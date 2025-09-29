@@ -8,6 +8,9 @@
 /*
  * Your application specific code will go here
  */
+
+
+
 define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknockouttemplateutils', 'ojs/ojcorerouter', 'ojs/ojmodulerouter-adapter', 'ojs/ojknockoutrouteradapter', 'ojs/ojurlparamadapter', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojarraydataprovider',
         'ojs/ojdrawerpopup', 'ojs/ojmodule-element', 'ojs/ojknockout'],
   function(ko, Context, moduleUtils, KnockoutTemplateUtils, CoreRouter, ModuleRouterAdapter, KnockoutRouterAdapter, UrlParamAdapter, ResponsiveUtils, ResponsiveKnockoutUtils, ArrayDataProvider) {
@@ -34,10 +37,42 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       this.mdScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
 
       let navData = [
-          { path: '', redirect: 'Login_Page' },
-          { path: 'Login_Page', detail: { label: 'Login', iconClass: 'oj-ux-ico-contact-group' } },
-          { path: 'ForgetPassword', detail: { label: 'Password Recovery', iconClass: 'oj-ux-ico-lock' } }
+          { path: '', redirect: 'login_Page' },
+          { path: 'login_Page', detail: { label: 'Login', iconClass: 'oj-ux-ico-contact-group' } },
+          { path: 'account_type', detail: { label: 'account_type', iconClass: 'oj-ux-ico-contact' } },
+          { path: 'account_details', detail: { label: 'account_details', iconClass: 'oj-ux-ico-contact' } },
+          { path: 'login_details', detail: { label: 'login_details', iconClass: 'oj-ux-ico-contact' } },
+          { path: 'login_details_2', detail: { label: 'login_details_2', iconClass: 'oj-ux-ico-contact' } },
+          { path: 'account_type', detail: { label: 'account_type', iconClass: 'oj-ux-ico-contact' } }
       ];
+
+      // Pre-loading all viewModels using Require.JS for SRS Navigation
+      require([
+        'viewModels/account_type',
+        'viewModels/account_details',
+        'viewModels/login_details'
+      ], function() {
+        console.log('All viewModels preloaded');
+      });
+
+      const self = this; // Make sure you have self = this
+
+        // Navigate to next step
+        this.nextStep = function() {
+          const currentIndex = self.steps.indexOf(window.appRouter.stateId());
+          if (currentIndex < self.steps.length - 1) {
+            window.appRouter.go(self.steps[currentIndex + 1]);
+          }
+        };
+
+        // Navigate to previous step
+        this.prevStep = function() {
+          const currentIndex = self.steps.indexOf(window.appRouter.stateId());
+          if (currentIndex > 0) {
+            window.appRouter.go(self.steps[currentIndex - 1]);
+          }
+        };
+
 
       // Router setup
       let router = new CoreRouter(navData, {
@@ -45,7 +80,16 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       });
       router.sync();
 
-      this.moduleAdapter = new ModuleRouterAdapter(router);
+      // add these after router.sync();
+      window.appRouter = router;          // allow other VMs to use the same router instance
+      oj.Router.rootInstance = router;   // optional but useful for compatibility with code that uses oj.Router.rootInstance
+
+
+      // this.moduleAdapter = new ModuleRouterAdapter(router);
+      // Pass the ControllerViewModel instance as $parent
+      this.moduleAdapter = new ModuleRouterAdapter(router, {
+        params: { $parent: this }
+      });
 
       this.selection = new KnockoutRouterAdapter(router);
 

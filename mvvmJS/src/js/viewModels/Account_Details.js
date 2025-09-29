@@ -1,9 +1,13 @@
-
-define([], function() {
-  function Account_DetailsViewModel(params) {
-    this.nextStep = params.nextStep;
-    this.prevStep = params.prevStep;
-    // Add any observables or logic for account details form here
+define(['../accUtils', 'knockout'], 
+function(accUtils, ko) {
+  function AccountDetails() {
+    this.connected = () => {
+      console.log('Account Details ViewModel loaded'); // Debug log
+      accUtils.announce('Account Details page loaded.', 'assertive');
+      document.title = "Account Details";
+    };
+    this.disconnected = () => {};
+    this.transitionCompleted = () => {};
   }
-  return Account_DetailsViewModel;
+  return AccountDetails;
 });
