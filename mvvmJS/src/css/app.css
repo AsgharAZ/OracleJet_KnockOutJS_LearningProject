@@ -107,3 +107,10 @@ html[dir="rtl"] .demo-oracle-icon {
   background-image: url('images/MezanBank_Background.jpg');
   background-size: cover !important;
 }
+
+.selected-btn {
+  border: 2px solid #6e1e7d !important;
+  background: #fdf0fd !important;
+  color: #6e1e7d !important;
+  box-shadow: 0 0 8px rgba(110, 30, 125, 0.3);
+}

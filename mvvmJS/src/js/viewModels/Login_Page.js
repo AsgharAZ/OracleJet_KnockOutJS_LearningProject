@@ -91,7 +91,7 @@ define(['knockout', 'ojs/ojlogger'], function(ko, Logger) {
       console.warn('Routing to state via hash fallback. Ensure route exists: ', stateId);
       // console.log('2',stateId);
       window.location.hash = '#/' + stateId;
-      // console.log('3',stateId);
+      console.log('3',stateId);
 
     }
   }

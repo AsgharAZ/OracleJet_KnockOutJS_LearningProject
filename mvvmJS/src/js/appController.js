@@ -13,10 +13,11 @@
 
 define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknockouttemplateutils', 'ojs/ojcorerouter', 'ojs/ojmodulerouter-adapter', 'ojs/ojknockoutrouteradapter', 'ojs/ojurlparamadapter', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojarraydataprovider',
         'ojs/ojdrawerpopup', 'ojs/ojmodule-element', 'ojs/ojknockout'],
-  function(ko, Context, moduleUtils, KnockoutTemplateUtils, CoreRouter, ModuleRouterAdapter, KnockoutRouterAdapter, UrlParamAdapter, ResponsiveUtils, ResponsiveKnockoutUtils, ArrayDataProvider) {
+  function(ko, Context, moduleUtils, KnockoutTemplateUtils, CoreRouter, ModuleRouterAdapter, KnockoutRouterAdapter, UrlParamAdapter, ResponsiveUtils, ResponsiveKnockoutUtils, ArrayDataProvider) {       
+              // console.log('STATE IDDDDD', window.appRouter.currentState().id);
 
      function ControllerViewModel() {
-
+      // debugger
       this.KnockoutTemplateUtils = KnockoutTemplateUtils;
 
       // Handle announcements sent when pages change, for Accessibility.
@@ -37,7 +38,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       this.mdScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(mdQuery);
 
       let navData = [
-          { path: '', redirect: 'login_Page' },
+          { path: '', redirect: 'login_details' },
           { path: 'login_Page', detail: { label: 'Login', iconClass: 'oj-ux-ico-contact-group' } },
           { path: 'account_type', detail: { label: 'account_type', iconClass: 'oj-ux-ico-contact' } },
           { path: 'account_details', detail: { label: 'account_details', iconClass: 'oj-ux-ico-contact' } },
@@ -47,18 +48,35 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       ];
 
       // Pre-loading all viewModels using Require.JS for SRS Navigation
-      require([
-        'viewModels/account_type',
-        'viewModels/account_details',
-        'viewModels/login_details'
-      ], function() {
-        console.log('All viewModels preloaded');
+      ko.components.register('account_type', {
+        viewModel: { require: 'viewModels/account_type' },
+        template: { require: 'text!views/account_type.html' }
       });
 
+      ko.components.register('account_details', {
+        viewModel: { require: 'viewModels/account_details' },
+        template: { require: 'text!views/account_details.html' }
+      });
+
+      ko.components.register('login_details', {
+        viewModel: { require: 'viewModels/login_details' },
+        template: { require: 'text!views/login_details.html' }
+      });
+
+      ko.components.register('login_details-2', {
+        viewModel: { require: 'viewModels/login_details_2' },
+        template: { require: 'text!views/login_details_2.html' }
+      }); 
+
+// etc.
+
+
       const self = this; // Make sure you have self = this
+      self.steps = ['account_type', 'account_details', 'login_details', 'login_details_2'];
 
         // Navigate to next step
         this.nextStep = function() {
+          console.log('STATE IDDDDD', window.appRouter.stateId());
           const currentIndex = self.steps.indexOf(window.appRouter.stateId());
           if (currentIndex < self.steps.length - 1) {
             window.appRouter.go(self.steps[currentIndex + 1]);
@@ -67,11 +85,30 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
         // Navigate to previous step
         this.prevStep = function() {
+            console.log('STATE IDDDDD', window.appRouter.stateId());
+
           const currentIndex = self.steps.indexOf(window.appRouter.stateId());
           if (currentIndex > 0) {
             window.appRouter.go(self.steps[currentIndex - 1]);
           }
         };
+
+        self.nextStep = function () {
+          console.log('STATE IDDDDD', window.appRouter.stateId());
+          const currentIndex = self.steps.indexOf(router.stateId());
+          if (currentIndex < self.steps.length - 1) {
+            router.go(self.steps[currentIndex + 1]);
+          }
+        };
+
+        self.prevStep = function () {
+          console.log('STATE IDDDDD', window.appRouter.stateId());
+          const currentIndex = self.steps.indexOf(router.stateId());
+          if (currentIndex > 0) {
+            router.go(self.steps[currentIndex - 1]);
+          }
+        };
+
 
 
       // Router setup
@@ -82,14 +119,15 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // add these after router.sync();
       window.appRouter = router;          // allow other VMs to use the same router instance
-      oj.Router.rootInstance = router;   // optional but useful for compatibility with code that uses oj.Router.rootInstance
+      // oj.Router.rootInstance = router;   // optional but useful for compatibility with code that uses oj.Router.rootInstance
 
 
       // this.moduleAdapter = new ModuleRouterAdapter(router);
       // Pass the ControllerViewModel instance as $parent
       this.moduleAdapter = new ModuleRouterAdapter(router, {
-        params: { $parent: this }
+        params: { parent: this }
       });
+
 
       this.selection = new KnockoutRouterAdapter(router);
 
