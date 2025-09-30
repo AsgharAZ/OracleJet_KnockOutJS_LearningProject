@@ -1,6 +1,6 @@
 define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
-  function AccountTypeViewModel( ) {
-    const self = this;
+  function AccountTypeViewModel(params) {
+    const self = this;  
 
     console.log('>>> AccountTypeViewModel instantiated. params =', params);
 
@@ -11,14 +11,20 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     console.log(params.parent);
 
 
+    // Try to get parent from params first
     if (params && params.parent) {
       self.parent = params.parent;
     } else {
-      console.warn("⚠️ No parent passed to AccountTypeViewModel");
-      self.parent = null; // fallback to null so code doesn't crash
+      // Fallback: try to get parent from global appRouter
+      if (window.appRouter && window.appRouter.parent) {
+        self.parent = window.appRouter.parent;
+      } else {
+        console.warn("⚠️ No parent passed to AccountTypeViewModel");
+        self.parent = null; // fallback to null so code doesn't crash
+      }
     }
 
-    
+
     if (self.parent) {
       console.log("Parent received in AccountType:", self.parent);
     } else {
@@ -39,6 +45,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     // Back button
     self.goBack = function () {
       if (self.parent && typeof self.parent.prevStep === 'function') {
+        console.log('Back clicked, calling parent.prevStep()');
         self.parent.prevStep();
       } else {
         console.error("prevStep not available in parent!");

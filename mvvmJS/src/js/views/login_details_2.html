@@ -2,41 +2,41 @@
   <div class="dashboard-content-box oj-hybrid-padding" 
        style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;">
 
-    <!-- Progress Indicator (optional, remove if not needed on this screen) -->
-  <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 28px; font-size: 0.95rem; color: #666; width: 100%; max-width: 900px;">
+    <!-- Wizard progress indicator -->
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 28px; font-size: 0.95rem; color: #666; width: 100%; max-width: 900px;">
       <!-- Stage 1 -->
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <!-- Circle container -->
-            <div style="display: flex; flex-direction: column; align-items: center;">
-              <!-- Circle -->
-              <span style="display:inline-flex; align-items:center; justify-content:center;
-                          width:32px; height:32px; border-radius:50%; background:#f0f0f0;
-                          border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">
-                1
-              </span>
-              <!-- Green line UNDER the circle -->
-              <div style="width:20px; height:3px; background:lightgreen; margin-top:6px;"></div>
-            </div>
-
-            <!-- Text on the right -->
-            <span style="font-weight:600; color:#333;">Account Type</span>
-          </div>
-      <div style="flex:0 0 32px; height:2px; background:#bbb; margin:0 8px;"></div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#29c547; border:2px solid #1ab437; color:#fff; font-weight:700; font-size:1.1rem;">1</span>
+          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
+        </div>
+        <span style="font-weight:600; color:#1ab437;">Account Type</span>
+      </div>
+      <div style="flex:0 0 32px; height:2px; background:#1ab437; margin:0 8px;"></div>
       <!-- Stage 2 -->
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#f0f0f0; border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">2</span>
-        <span style="font-weight:600; color:#333;">Account Details</span>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#29c547; border:2px solid #1ab437; color:#fff; font-weight:700; font-size:1.1rem;">2</span>
+          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
+        </div>
+        <span style="font-weight:600; color:#1ab437;">Account Details</span>
       </div>
-      <div style="flex:0 0 32px; height:2px; background:#bbb; margin:0 8px;"></div>
+      <div style="flex:0 0 32px; height:2px; background:#1ab437; margin:0 8px;"></div>
       <!-- Stage 3 -->
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#f0f0f0; border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">3</span>
-        <span style="font-weight:600; color:#333;">Verification</span>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#29c547; border:2px solid #1ab437; color:#fff; font-weight:700; font-size:1.1rem;">3</span>
+          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
+        </div>
+        <span style="font-weight:600; color:#1ab437;">Verification</span>
       </div>
-      <div style="flex:0 0 32px; height:2px; background:#bbb; margin:0 8px;"></div>
+      <div style="flex:0 0 32px; height:2px; background:#1ab437; margin:0 8px;"></div>
       <!-- Stage 4 -->
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#f0f0f0; border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">4</span>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#f0f0f0; border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">4</span>
+          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
+        </div>
         <span style="font-weight:600; color:#333;">Login Details</span>
       </div>
     </div>
@@ -49,41 +49,59 @@
 
         <!-- Title -->
         <h2 style="font-size: 1.6rem; text-align: left; font-weight: 700; margin-bottom: 18px; color:#333;">
-          Account Recovery
+          Security Questions
         </h2>
 
-        <!-- Username label -->
-        <label for="username" style="font-weight: 700; font-size: 1.1rem; margin-bottom: 6px; color: #333;">
-          Username
-        </label>
-
-        <!-- Username display box -->
-        <div id="username" style="width: 380px; padding: 12px 0; margin-bottom: 24px;
-                                  background: #eee; border-radius: 8px; text-align: center;
-                                  font-weight: 700; font-size: 1.3rem; color: #6e1e7d;">
-          alikhan786
+        <!-- Security Question 1 -->
+        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
+          <label for="securityQuestion1" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
+            Security Question 1 *
+          </label>
+          <select id="securityQuestion1" data-bind="value: securityQuestion1"
+                  style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none; background:#fff;">
+            <option value="">Select a security question</option>
+            <!-- ko foreach: securityQuestions -->
+            <option data-bind="value: $data, text: $data"></option>
+            <!-- /ko -->
+          </select>
         </div>
 
-        <!-- Buttons container -->
-        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
-          <button type="button" style="background: white; border: 1.7px solid #6e1e7d;
-                                       border-radius: 9px; padding: 14px 36px;
-                                       font-weight: 700; font-size: 1rem; color: #6e1e7d;
-                                       cursor: pointer;">
-            Continue to Login
-          </button>
-
-          <button type="button" style="background: #6e1e7d; border: none; border-radius: 9px;
-                                       padding: 14px 38px; font-weight: 700; font-size: 1rem;
-                                       color: white; cursor: pointer;">
-            Reset Password
-          </button>
+        <!-- Security Answer 1 -->
+        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
+          <label for="securityAnswer1" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
+            Answer 1 *
+          </label>
+          <input id="securityAnswer1" type="text" placeholder="Enter your answer" data-bind="value: securityAnswer1"
+                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
         </div>
 
-        <!-- Note text -->
-        <div style="font-size: 0.85rem; color: #666; max-width: 380px; line-height: 1.3;">
-          In case if you remember your Password, proceed to Login.  
-          If you wish to reset your password click on <strong>Reset Password</strong>
+        <!-- Security Question 2 -->
+        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
+          <label for="securityQuestion2" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
+            Security Question 2 *
+          </label>
+          <select id="securityQuestion2" data-bind="value: securityQuestion2"
+                  style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none; background:#fff;">
+            <option value="">Select a security question</option>
+            <!-- ko foreach: securityQuestions -->
+            <option data-bind="value: $data, text: $data"></option>
+            <!-- /ko -->
+          </select>
+        </div>
+
+        <!-- Security Answer 2 -->
+        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
+          <label for="securityAnswer2" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
+            Answer 2 *
+          </label>
+          <input id="securityAnswer2" type="text" placeholder="Enter your answer" data-bind="value: securityAnswer2"
+                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
+        </div>
+
+        <!-- Action buttons -->
+        <div style="display:flex; justify-content: flex-start; gap: 9px; margin-top: 28px; width: 100%; max-width: 500px;">
+          <button type="button" data-bind="click: goBack" style="background:#f2f2f2; color:#6e1e7d; border:none; border-radius: 10px; padding: 14px 70px; font-size: 1rem; font-weight: 600; cursor: pointer;">Back</button>
+          <button type="button" data-bind="click: finish" style="background:#29c547; color:#fff; border:none; border-radius: 10px; padding: 14px 105px; font-size: 1rem; font-weight: 600; cursor: pointer;">Finish</button>
         </div>
       </div>
 
