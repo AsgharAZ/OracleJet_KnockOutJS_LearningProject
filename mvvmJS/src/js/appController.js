@@ -100,15 +100,30 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // Navigate to next step
       self.nextStep = function() {
+
+
         console.log('nextStep called');
-        const currentStep = self.currentStep();
+        currentStep = self.currentStep();
         console.log('Current step:', currentStep);
-        const currentIndex = self.steps.indexOf(currentStep);
+        // const currentIndex = self.steps.indexOf(currentStep);
+        currentIndex = self.steps.indexOf(currentStep);
         console.log('Current index:', currentIndex);
 
         if (currentIndex < self.steps.length - 1 && currentIndex >= 0) {
+
+
+
+          // console.log('Before nextStep index:', currentIndex);
+
+          // // if (currentStep == 'account_type') { console.log("N-SETTING 0 "); currentIndex = 0; }
+          // // if (currentStep == 'account_details') { console.log("N-SETTING 1 "); currentIndex = 1; }
+          // // if (currentStep == 'login_details') { console.log("N-SETTING 2 "); currentIndex = 2; }
+          // // if (currentStep == 'login_details') { console.log("SETTING 3 "); currentIndex = 3; }
+
+          // console.log('Before nextStep after edit index:', currentIndex);
+
           const nextStep = self.steps[currentIndex + 1];
-          console.log('Navigating to next step:', nextStep);
+
           const currentRouter = window.appRouter || router;
 
           if (currentRouter && typeof currentRouter.go === 'function') {
@@ -133,11 +148,12 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       self.prevStep = function() {
 
         console.log('prevStep called');
-        const currentStep = self.currentStep();
+        currentStep = self.currentStep();
         console.log('Current step:', currentStep);
-        const currentIndex = self.steps.indexOf(currentStep);
+        //const currentIndex = self.steps.indexOf(currentStep); //change
+        currentIndex = self.steps.indexOf(currentStep);
         console.log('Current index:', currentIndex);
-
+        
         if (currentIndex >= 0) {
           const prevStep = self.steps[currentIndex - 1];
           console.log('Navigating to previous step:', prevStep);
@@ -146,6 +162,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
           currentRouter.go({path: 'login_page'});
         }
           if (currentRouter && typeof currentRouter.go === 'function') {
+            self.currentStep(prevStep);
             currentRouter.go({ path: prevStep });
           } else {
             console.error('Router go method not available');
@@ -153,6 +170,10 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         } else {
           console.log('No previous step available');
         }
+        if (currentIndex == 0) { console.log("P-SETTING 0 "); currentStep = 'account_type'; }
+        if (currentIndex == 1) { console.log("P-SETTING 1 "); currentStep = 'account_details'; }
+        if (currentIndex == 2) { console.log("P-SETTING 2 "); currentStep = 'login_details'; }
+        if (currentIndex == 3) { console.log("P-SETTING 3 "); currentStep = 'login_details_2'; }
       };
 
       // Check if current step has next step
