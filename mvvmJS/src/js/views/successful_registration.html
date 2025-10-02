@@ -1,0 +1,70 @@
+<div class="dashboard-bg-wrapper" style="overflow: visible;">
+  <!-- Purple background section -->
+  <div style="background: linear-gradient(135deg, #6e1e7d 0%, #8b2ea0 100%); padding: 80px 20px 40px; display: flex; justify-content: center; min-height: 120px; position: relative; overflow: visible;">
+  </div>
+
+  <!-- White content section with tickmark overlap -->
+  <div class="dashboard-content-box oj-hybrid-padding"
+       style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+              width: 100%; min-height: 400px; padding: 80px 40px 40px;   /* add top padding so content doesn't collide with tick */
+              margin-top: -40px; border-radius: 20px 20px 0 0; background: white;
+              box-shadow: 0 -4px 20px rgba(0,0,0,0.1); position: relative; overflow: visible;">  <!-- ensure overflow visible -->
+
+    <!-- Green Tickmark Icon (positioned to straddle purple/white boundary) -->
+    <div style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 20;
+                width: 110px; height: 110px; display:flex; align-items:center; justify-content:center;">
+      <!-- optional white ring behind the tick so it reads well on purple -->
+      <div style="position:absolute; width:110px; height:110px; border-radius:50%; background:#fff; box-shadow: 0 6px 18px rgba(0,0,0,0.12); display:block;"></div>
+      <img src="css/images/green_tickmark.png" alt="Success"
+           style="position:relative; width:88px; height:88px; border-radius:50%; z-index:21; object-fit:contain;">
+    </div>
+
+    <!-- Main Success Message -->
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; color:#6e1e7d; text-align: center; line-height: 1.3;">
+      You have successfully<br>
+      registered for online banking
+    </h1>
+
+    <!-- Subtitle -->
+    <p style="font-size: 0.9rem; color:#666; text-align: center; margin-bottom: 40px; max-width: 500px; line-height: 1.5;">
+      Following are the details of your registered online banking account.
+    </p>
+
+    <!-- Account Details -->
+    <div style="width: 100%; max-width: 500px; margin-bottom: 40px; text-align: center;">
+
+      <!-- Username -->
+      <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.8rem; color:#6e1e7d; margin-bottom: 2px; font-weight: 600;">USERNAME</div>
+        <div style="font-size: 1.2rem; color:#333; font-weight: 600;">
+          0321234567
+        </div>
+      </div>
+
+      <!-- Account Title -->
+      <div style="margin-bottom: 20px;">
+        <div style="font-size: 0.8rem; color:#6e1e7d; margin-bottom: 2px; font-weight: 600;">ACCOUNT TITLE</div>
+        <div style="font-size: 1.2rem; color:#333; font-weight: 600;">
+          ALI KHAN
+        </div>
+      </div>
+
+      <!-- Account Number -->
+      <div>
+        <div style="font-size: 0.8rem; color:#6e1e7d; margin-bottom: 2px; font-weight: 600;">ACCOUNT NUMBER</div>
+        <div style="font-size: 1.2rem; color:#333; font-weight: 600;">
+          0153540052790
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Continue to Login Button -->
+    <button type="button" data-bind="click: continueToLogin"
+            style="background:#6e1e7d; color:#fff; border:none; border-radius:8px; padding:18px 48px;
+                   font-size:1.1rem; font-weight:600; cursor:pointer; width: 100%; max-width: 300px; box-shadow: 0 4px 12px rgba(110, 30, 125, 0.3);">
+      Continue to Log In
+    </button>
+
+  </div>
+</div>

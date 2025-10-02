@@ -44,7 +44,8 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
           { path: 'account_type', detail: { label: 'account_type', iconClass: 'oj-ux-ico-contact' } },
           { path: 'account_details', detail: { label: 'account_details', iconClass: 'oj-ux-ico-contact' } },
           { path: 'login_details', detail: { label: 'login_details', iconClass: 'oj-ux-ico-contact' } },
-          { path: 'login_details_2', detail: { label: 'login_details_2', iconClass: 'oj-ux-ico-contact' } }
+          { path: 'login_details_2', detail: { label: 'login_details_2', iconClass: 'oj-ux-ico-contact' } },
+          { path: 'successful_registration', detail: { label: 'successful_registration', iconClass: 'oj-ux-ico-contact' } }
       ];
 
       // Pre-loading all viewModels using Require.JS for SRS Navigation
@@ -170,10 +171,6 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         } else {
           console.log('No previous step available');
         }
-        if (currentIndex == 0) { console.log("P-SETTING 0 "); currentStep = 'account_type'; }
-        if (currentIndex == 1) { console.log("P-SETTING 1 "); currentStep = 'account_details'; }
-        if (currentIndex == 2) { console.log("P-SETTING 2 "); currentStep = 'login_details'; }
-        if (currentIndex == 3) { console.log("P-SETTING 3 "); currentStep = 'login_details_2'; }
       };
 
       // Check if current step has next step

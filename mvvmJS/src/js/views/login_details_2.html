@@ -1,112 +1,135 @@
 <div class="dashboard-bg-wrapper">
-  <div class="dashboard-content-box oj-hybrid-padding" 
-       style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;">
+  <div class="dashboard-content-box oj-hybrid-padding"
+       style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; max-width: 900px; margin: 0;">
 
     <!-- Wizard progress indicator -->
-    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 28px; font-size: 0.95rem; color: #666; width: 100%; max-width: 900px;">
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 28px; font-size: 0.95rem; color: #666; width: 100%;">
+      
       <!-- Stage 1 -->
       <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#29c547; border:2px solid #1ab437; color:#fff; font-weight:700; font-size:1.1rem;">1</span>
-          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
-        </div>
+        <span style="display:inline-flex; align-items:center; justify-content:center;
+                      width:32px; height:32px; border-radius:50%; 
+                      background:#29c547; border:2px solid #1a8c3a; 
+                      color:#fff; font-weight:700; font-size:1.1rem;">1</span>
         <span style="font-weight:600; color:#1ab437;">Account Type</span>
       </div>
       <div style="flex:0 0 32px; height:2px; background:#1ab437; margin:0 8px;"></div>
+
       <!-- Stage 2 -->
       <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#29c547; border:2px solid #1ab437; color:#fff; font-weight:700; font-size:1.1rem;">2</span>
-          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
-        </div>
+        <span style="display:inline-flex; align-items:center; justify-content:center;
+                      width:32px; height:32px; border-radius:50%; 
+                      background:#29c547; border:2px solid #1a8c3a; 
+                      color:#fff; font-weight:700; font-size:1.1rem;">2</span>
         <span style="font-weight:600; color:#1ab437;">Account Details</span>
       </div>
       <div style="flex:0 0 32px; height:2px; background:#1ab437; margin:0 8px;"></div>
-      <!-- Stage 3 -->
+
+      <!-- Stage 3 - Completed -->
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="display: flex; flex-direction: column; align-items: center;">
           <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#29c547; border:2px solid #1ab437; color:#fff; font-weight:700; font-size:1.1rem;">3</span>
-          <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
         </div>
         <span style="font-weight:600; color:#1ab437;">Verification</span>
       </div>
       <div style="flex:0 0 32px; height:2px; background:#1ab437; margin:0 8px;"></div>
+
       <!-- Stage 4 -->
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="display: flex; flex-direction: column; align-items: center;">
-          <span style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:50%; background:#f0f0f0; border:2px solid #bbb; color:#333; font-weight:700; font-size:1.1rem;">4</span>
+          <span style="display:inline-flex; align-items:center; justify-content:center;
+                        width:32px; height:32px; border-radius:50%; 
+                        background:#f0f0f0; 
+                        border:2px solid #bbb; 
+                        color:#333; font-weight:700; font-size:1.1rem;">
+            4
+          </span>
+          <!-- Underline only for active (not here yet) -->
+          <!-- Green underline -->
           <div style="width:20px; height:3px; background:#1ab437; margin-top:6px;"></div>
         </div>
         <span style="font-weight:600; color:#333;">Login Details</span>
       </div>
     </div>
-    <div style="display: flex; flex-direction: row; width: 100%; max-width: 900px;">
-      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
 
-    <!-- Main Content Area -->
-    <div style="display: flex; flex-direction: row; width: 100%; max-width: 900px;">
-      <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
 
-        <!-- Title -->
-        <h2 style="font-size: 1.6rem; text-align: left; font-weight: 700; margin-bottom: 18px; color:#333;">
-          Security Questions
-        </h2>
 
-        <!-- Security Question 1 -->
-        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
-          <label for="securityQuestion1" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
-            Security Question 1 *
-          </label>
-          <select id="securityQuestion1" data-bind="value: securityQuestion1"
-                  style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none; background:#fff;">
-            <option value="">Select a security question</option>
-            <!-- ko foreach: securityQuestions -->
-            <option data-bind="value: $data, text: $data"></option>
-            <!-- /ko -->
-          </select>
+    <!-- Reset Password form -->
+    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 100%; max-width: 500px; margin: 0;">
+
+      <!-- Heading -->
+      <h2 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 32px; color:#333;">Reset Password</h2>
+
+      <!-- New Password -->
+      <div style="margin-bottom: 24px; width: 100%;">
+        <label for="newPassword" style="display:block; font-size: 1rem; font-weight: 600; margin-bottom: 12px; color:#333;">
+          New Password
+        </label>
+        <div style="position:relative; width:100%;">
+          <input id="newPassword" type="password" placeholder="Enter new password" data-bind="value: newPassword, valueUpdate: 'input', event: { input: passwordStrength }"
+                 style="width:80%; border:1px solid #ccc; border-radius:8px; padding:14px 80px 14px 16px; font-size:1rem; outline:none; transition: border-color 0.3s;">
+          <button type="button" data-bind="click: togglePasswordVisibility"
+                  style="position:absolute; top:50%; right:45px; transform:translateY(-50%);
+                         background:none; border:none; color:#6e1e7d; font-weight:600; cursor:pointer; font-size:0.9rem;">
+            SHOW
+          </button>
         </div>
 
-        <!-- Security Answer 1 -->
-        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
-          <label for="securityAnswer1" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
-            Answer 1 *
-          </label>
-          <input id="securityAnswer1" type="text" placeholder="Enter your answer" data-bind="value: securityAnswer1"
-                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
-        </div>
-
-        <!-- Security Question 2 -->
-        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
-          <label for="securityQuestion2" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
-            Security Question 2 *
-          </label>
-          <select id="securityQuestion2" data-bind="value: securityQuestion2"
-                  style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none; background:#fff;">
-            <option value="">Select a security question</option>
-            <!-- ko foreach: securityQuestions -->
-            <option data-bind="value: $data, text: $data"></option>
-            <!-- /ko -->
-          </select>
-        </div>
-
-        <!-- Security Answer 2 -->
-        <div style="margin-bottom: 20px; width: 100%; max-width: 500px;">
-          <label for="securityAnswer2" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
-            Answer 2 *
-          </label>
-          <input id="securityAnswer2" type="text" placeholder="Enter your answer" data-bind="value: securityAnswer2"
-                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
-        </div>
-
-        <!-- Action buttons -->
-        <div style="display:flex; justify-content: flex-start; gap: 9px; margin-top: 28px; width: 100%; max-width: 500px;">
-          <button type="button" data-bind="click: goBack" style="background:#f2f2f2; color:#6e1e7d; border:none; border-radius: 10px; padding: 14px 70px; font-size: 1rem; font-weight: 600; cursor: pointer;">Back</button>
-          <button type="button" data-bind="click: finish" style="background:#29c547; color:#fff; border:none; border-radius: 10px; padding: 14px 105px; font-size: 1rem; font-weight: 600; cursor: pointer;">Finish</button>
+        <!-- Password Strength Indicator -->
+        <div style="margin-top:12px;" data-bind="visible: newPassword().length > 0">
+          <div style="height:6px; background:#e0e0e0; border-radius:3px; overflow:hidden; margin-bottom:8px;">
+            <div data-bind="style: { width: passwordStrengthPercentage() + '%', backgroundColor: passwordStrengthColor() }"
+                 style="height:100%; transition: all 0.3s ease;"></div>
+          </div>
+          <div style="font-size:0.9rem; margin-bottom:8px;">
+            <span data-bind="text: passwordStrengthText, style: { color: passwordStrengthColor() }"
+                  style="font-weight:600;"></span>
+          </div>
+          <div style="font-size:0.85rem; color:#666; line-height:1.4;">
+            • Password should be alphanumeric.<br>
+            • Minimum password length should be 8.<br>
+            • Special characters are optional.
+          </div>
         </div>
       </div>
 
-      <!-- Right column (empty for now, can be used for guidance/info box like CNIC example) -->
-      <div style="flex: 1;"></div>
+      <!-- Re-enter Password -->
+      <div style="margin-bottom: 32px; width: 100%;">
+        <label for="rePassword" style="display:block; font-size: 1rem; font-weight: 600; margin-bottom: 12px; color:#333;">
+          Re-enter New Password
+        </label>
+        <div style="position:relative; width:100%;">
+          <input id="rePassword" type="password" placeholder="Re-enter new password" data-bind="value: rePassword, valueUpdate: 'input'"
+                 style="width:80%; border:1px solid #ccc; border-radius:8px; padding:14px 80px 14px 16px; font-size:1rem; outline:none; transition: border-color 0.3s;">
+          <button type="button" data-bind="click: toggleRePasswordVisibility"
+                  style="position:absolute; top:50%; right:45px; transform:translateY(-50%);
+                         background:none; border:none; color:#6e1e7d; font-weight:600; cursor:pointer; font-size:0.9rem;">
+            SHOW
+          </button>
+        </div>
+
+        <!-- Password Match Status -->
+        <div data-bind="visible: rePassword().length > 0" style="margin-top:8px;">
+          <div data-bind="text: passwordMatchText, style: { color: passwordMatchColor() }"
+               style="font-size:0.9rem; font-weight:600;"></div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex; gap: 16px; width: 100%;">
+        <button type="button" data-bind="click: backToUsername"
+                style="background:#f8f9fa; color:#6e1e7d; border:2px solid #6e1e7d; border-radius:8px; padding:14px 32px;
+                       font-size:1rem; font-weight:600; cursor:pointer; flex:1;">
+          Back to Username
+        </button>
+        <button type="button" data-bind="click: updatePassword, enable: canUpdatePassword"
+                style="background:#1ab437; color:#fff; border:none; border-radius:8px; padding:14px 32px;
+                       font-size:1rem; font-weight:600; cursor:pointer; flex:1;"
+                data-bind="css: { 'disabled': !canUpdatePassword() }">
+          Update Password
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
