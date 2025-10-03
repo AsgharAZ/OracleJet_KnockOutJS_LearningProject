@@ -116,10 +116,10 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
           // console.log('Before nextStep index:', currentIndex);
 
-          // // if (currentStep == 'account_type') { console.log("N-SETTING 0 "); currentIndex = 0; }
-          // // if (currentStep == 'account_details') { console.log("N-SETTING 1 "); currentIndex = 1; }
-          // // if (currentStep == 'login_details') { console.log("N-SETTING 2 "); currentIndex = 2; }
-          // // if (currentStep == 'login_details') { console.log("SETTING 3 "); currentIndex = 3; }
+          // if (currentStep == 'account_type') { console.log("N-SETTING 0 "); currentIndex = 0; }
+          // if (currentStep == 'account_details') { console.log("N-SETTING 1 "); currentIndex = 1; }
+          // if (currentStep == 'login_details') { console.log("N-SETTING 2 "); currentIndex = 2; }
+          // if (currentStep == 'login_details') { console.log("SETTING 3 "); currentIndex = 3; }
 
           // console.log('Before nextStep after edit index:', currentIndex);
 
@@ -155,6 +155,11 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         currentIndex = self.steps.indexOf(currentStep);
         console.log('Current index:', currentIndex);
         
+        // if (currentStep == 'account_type') { console.log("N-SETTING 0 "); currentIndex = 0; }
+        // if (currentStep == 'account_details') { console.log("N-SETTING 1 "); currentIndex = 1; }
+        // if (currentStep == 'login_details') { console.log("N-SETTING 2 "); currentIndex = 2; }
+        // if (currentStep == 'login_details') { console.log("SETTING 3 "); currentIndex = 3; }
+
         if (currentIndex >= 0) {
           const prevStep = self.steps[currentIndex - 1];
           console.log('Navigating to previous step:', prevStep);
