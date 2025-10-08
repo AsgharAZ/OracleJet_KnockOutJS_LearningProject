@@ -114,3 +114,9 @@ html[dir="rtl"] .demo-oracle-icon {
   color: #6e1e7d !important;
   box-shadow: 0 0 8px rgba(110, 30, 125, 0.3);
 }
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

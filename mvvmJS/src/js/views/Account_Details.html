@@ -77,9 +77,22 @@
           <label for="accountNumber" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
             Account Number
           </label>
-          <input id="accountNumber" type="text" placeholder="XXXXX-XXXXXXXXX" style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
+          <input id="accountNumber" type="text" placeholder="XXXXX-XXXXXXXXX" data-bind="value: accountNumber"
+                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
           <div style="font-size: 0.8rem; color:#666; margin-top:6px;">
             Please enter your 14 digit Account Number
+          </div>
+
+          <!-- Account Validation Message -->
+          <div data-bind="visible: accountValidationMessage, text: accountValidationMessage"
+               style="margin-top: 8px; font-size: 0.9rem; font-weight: 500;"
+               data-bind="style: { color: isAccountValid() ? '#28a745' : '#dc3545' }">
+          </div>
+
+          <!-- Loading indicator for account validation -->
+          <div data-bind="visible: isValidatingAccount" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span style="font-size: 0.9rem; color: #6e1e7d;">Validating...</span>
           </div>
         </div>
 

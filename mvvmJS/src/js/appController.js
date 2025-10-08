@@ -194,6 +194,11 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       self.currentStep = ko.observable(self.steps[0]);
       console.log('Initial current step set to:', self.currentStep());
 
+      // Shared data storage for wizard flow
+      self.wizardData = {
+        customerData: ko.observable(null)
+      };
+
       // Router setup
       let router = new CoreRouter(navData, {
         urlAdapter: new UrlParamAdapter()
@@ -202,6 +207,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // add these after router.sync();
       window.appRouter = router;          // allow other VMs to use the same router instance
+      window.controllerViewModel = self;  // allow other VMs to access the controller instance
       // Set parent on router for fallback access
       router.parent = self;
       // oj.Router.rootInstance = router;   // optional but useful for compatibility with code that uses oj.Router.rootInstance

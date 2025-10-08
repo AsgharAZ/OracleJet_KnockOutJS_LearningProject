@@ -68,6 +68,18 @@
           <input id="cnic" type="text" placeholder="XXXXX-XXXXXXX-X" data-bind="value: cnicNumber"
                  style="width: 100%; max-width: 360px; border-radius: 10px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
           <div style="font-size: 0.8rem; color:#666; margin-top:6px;">Please enter your 13-digit CNIC number</div>
+
+          <!-- CNIC Validation Message -->
+          <div data-bind="visible: cnicValidationMessage, text: cnicValidationMessage"
+               style="margin-top: 8px; font-size: 0.9rem; font-weight: 500;"
+               data-bind="style: { color: isCNICValid() ? '#28a745' : '#dc3545' }">
+          </div>
+
+          <!-- Loading indicator for CNIC validation -->
+          <div data-bind="visible: isValidatingCNIC" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span style="font-size: 0.9rem; color: #6e1e7d;">Validating...</span>
+          </div>
         </div>
 
         <!-- Action buttons -->

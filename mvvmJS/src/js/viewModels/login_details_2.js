@@ -164,10 +164,55 @@ define(['knockout'], function(ko) {
       }
     };
 
+    // Loading state for password update
+    self.isUpdatingPassword = ko.observable(false);
+    self.passwordUpdateMessage = ko.observable('');
+
+    // Get customer data for password update from shared wizard data
+    self.customerData = ko.computed(() => {
+      // Try multiple ways to access the shared data
+      let customerData = null;
+
+      // Method 1: Through params.parent
+      if (self.parent && self.parent.wizardData && self.parent.wizardData.customerData) {
+        customerData = self.parent.wizardData.customerData();
+        console.log("✅ login_details_2 found via params.parent:", customerData);
+      }
+      // Method 2: Through window.appRouter.parent
+      else if (window.appRouter && window.appRouter.parent && window.appRouter.parent.wizardData && window.appRouter.parent.wizardData.customerData) {
+        customerData = window.appRouter.parent.wizardData.customerData();
+        console.log("✅ login_details_2 found via window.appRouter.parent:", customerData);
+      }
+      // Method 3: Try to find it in the global scope
+      else if (window.controllerViewModel && window.controllerViewModel.wizardData && window.controllerViewModel.wizardData.customerData) {
+        customerData = window.controllerViewModel.wizardData.customerData();
+        console.log("✅ login_details_2 found via window.controllerViewModel:", customerData);
+      }
+
+      if (customerData) {
+        console.log("✅ login_details_2 Customer data found:", customerData);
+        return customerData;
+      } else {
+        console.log("❌ login_details_2 Customer data NOT found. Debug info:");
+        console.log("params.parent:", self.parent);
+        console.log("window.appRouter:", window.appRouter);
+        console.log("window.appRouter.parent:", window.appRouter ? window.appRouter.parent : 'undefined');
+        console.log("window.controllerViewModel:", window.controllerViewModel);
+        return null;
+      }
+    });
+
     // Update Password button
     self.updatePassword = function () {
+      console.log("🔥🔥🔥 UPDATE PASSWORD BUTTON CLICKED - DEBUGGING START 🔥🔥🔥");
+      console.log("Parent object:", self.parent);
+      console.log("window.appRouter:", window.appRouter);
+      console.log("window.controllerViewModel:", window.controllerViewModel);
+
       const newPwd = self.newPassword();
       const rePwd = self.rePassword();
+
+      console.log("Password inputs:", { newPwd: newPwd, rePwd: rePwd });
 
       // Final validation
       if (!newPwd || !rePwd) {
@@ -186,26 +231,88 @@ define(['knockout'], function(ko) {
       }
 
       const strength = self.passwordStrengthPercentage();
+      console.log("Password strength:", strength);
+
       if (strength < 50) {
         alert('Password strength must be at least "Fair" to proceed.');
         return;
       }
 
-      console.log("Password update validation passed");
+      const customer = self.customerData();
+      console.log("Customer data from computed observable:", customer);
 
-      // Navigate to successful registration page
-      if (window.appRouter && typeof window.appRouter.go === 'function') {
-        try {
-          window.appRouter.go({ path: 'successful_registration' });
-          console.log("Navigation to successful registration successful");
-        } catch (err) {
-          console.error('Navigation to successful registration failed:', err);
-        }
-      } else {
-        console.error("Router not available for navigation");
-        // Fallback: direct hash navigation
-        window.location.hash = '#/successful_registration';
+      if (!customer) {
+        console.error("❌ Customer data is null! Debug info:");
+        console.log("self.customerData():", self.customerData());
+        console.log("self.parent:", self.parent);
+        console.log("self.parent.wizardData:", self.parent ? self.parent.wizardData : 'No parent');
+        console.log("window.controllerViewModel.wizardData:", window.controllerViewModel ? window.controllerViewModel.wizardData : 'No controller');
+
+        alert('Customer data not available. Please start over.');
+        return;
       }
+
+      console.log("✅ Password update validation passed, updating password...");
+      console.log("Customer data available:", customer);
+
+      self.isUpdatingPassword(true);
+      self.passwordUpdateMessage('Updating password...');
+
+      // Prepare the update payload
+      const updatePayload = {
+        id: customer.id,
+        account_number: customer.account_number,
+        username: customer.username,
+        password: newPwd  // Update with new password
+      };
+
+      console.log('Update payload:', updatePayload);
+
+      // Make PUT request to update password
+      fetch('http://localhost:8080/api/v1/customers', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatePayload)
+      })
+      .then(response => {
+        console.log("PUT response status:", response.status);
+        console.log("PUT response ok:", response.ok);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Password update successful:', data);
+        self.passwordUpdateMessage('✓ Password updated successfully!');
+
+        // Navigate to successful registration page after a short delay
+        setTimeout(() => {
+          if (window.appRouter && typeof window.appRouter.go === 'function') {
+            try {
+              window.appRouter.go({ path: 'successful_registration' });
+              console.log("Navigation to successful registration successful");
+            } catch (err) {
+              console.error('Navigation to successful registration failed:', err);
+            }
+          } else {
+            console.error("Router not available for navigation");
+            // Fallback: direct hash navigation
+            window.location.hash = '#/successful_registration';
+          }
+        }, 1500);
+      })
+      .catch(error => {
+        console.error('Password update error:', error);
+        self.passwordUpdateMessage('✗ Error updating password. Please try again.');
+        alert('Failed to update password. Please check your connection and try again.');
+      })
+      .finally(() => {
+        self.isUpdatingPassword(false);
+      });
     };
 
     // Initialize password strength on load

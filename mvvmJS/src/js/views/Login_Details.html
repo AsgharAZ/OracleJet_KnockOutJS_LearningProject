@@ -81,6 +81,18 @@
         </label>
         <input id="username" type="text" readonly data-bind="value: username"
                style="width: 75%; border-radius: 8px; border: 1px solid #fff; padding: 18px; font-size: 1.6rem; outline:none; background-color: #ddd; color:#6e1e7d; font-weight: 700; text-align:center;">
+
+        <!-- Username fetch message -->
+        <div data-bind="visible: usernameFetchMessage, text: usernameFetchMessage"
+             style="margin-top: 8px; font-size: 0.9rem; font-weight: 500; text-align: center;"
+             data-bind="style: { color: username().length > 0 ? '#28a745' : '#dc3545' }">
+        </div>
+
+        <!-- Loading indicator for username fetch -->
+        <div data-bind="visible: isLoadingUsername" style="margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <span style="font-size: 0.9rem; color: #6e1e7d;">Loading username...</span>
+        </div>
       </div>
 
       <!-- Action buttons (left aligned) -->
