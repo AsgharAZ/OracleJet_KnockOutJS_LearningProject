@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+#spring:
+#  main:
+#    web-application-type: servlet
+
+
+
+#Make sure that the identation is the same as before.
+spring:
+  datasource:
+
+    url: jdbc:postgresql://localhost:5332/spring_bank
+#    url: jdbc:postgresql://localhost:5332/customer
+    # You will notice that you will find the same under, target < docker-compose.yml
+    username: amigoscode
+    password: password
+  jpa:
+    hibernate:
+      #This tells that we want to destroy the schema at the end of the session.
+#      ddl-auto: create-drop
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  main:
+    web-application-type: servlet
+
+#server:
+#  port: 8080
+#
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5332/spring_bank
+#    username: amigoscode
+#    password: password
+#    driver-class-name: org.postgresql.Driver
+#    hikari:
+#      maximum-pool-size: 10
+#      minimum-idle: 5
+#      connection-timeout: 30000
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#    show-sql: true
+#    defer-datasource-initialization: false
+#
+#  main:
+#    web-application-type: servlet
+#
+## Logging Configuration
+#logging:
+#  level:
+#    com.example.springOne: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
