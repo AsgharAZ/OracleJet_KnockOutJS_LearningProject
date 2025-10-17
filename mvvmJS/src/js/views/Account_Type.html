@@ -40,21 +40,21 @@
 
         <!-- Account type options -->
         <div style="display: flex; gap: 18px; margin-bottom: 26px; width: 100%; max-width: 600px;">
-          <button type="button" 
+          <button type="button"
                   data-bind="click: selectIndividual, css: { 'selected-btn': selectedAccountType() === 'Individual' }"
                   style="flex:1; padding: 16px; border-radius: 10px; border: 2px solid #6e1e7d; background:#fdf9fd; cursor:pointer; font-size: 1rem; font-weight: 600; color:#6e1e7d; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
             <span class="oj-fwk-icon oj-fwk-icon-user" style="font-size: 24px;"></span>
             Individual
           </button>
 
-          <button type="button" 
+          <button type="button"
                   data-bind="click: selectSoleProprietor, css: { 'selected-btn': selectedAccountType() === 'Sole Proprietor' }"
                   style="flex:1; padding: 16px; border-radius: 10px; border: 1px solid #ccc; background:#f9f9f9; cursor:pointer; font-size: 1rem; font-weight: 600; color:#333; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
             <span class="oj-fwk-icon oj-fwk-icon-briefcase" style="font-size: 24px;"></span>
             Sole Proprietor
           </button>
 
-          <button type="button" 
+          <button type="button"
                   data-bind="click: selectForeignNational, css: { 'selected-btn': selectedAccountType() === 'Foreign National' }"
                   style="flex:1; padding: 16px; border-radius: 10px; border: 1px solid #ccc; background:#f9f9f9; cursor:pointer; font-size: 1rem; font-weight: 600; color:#333; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
             <span class="oj-fwk-icon oj-fwk-icon-globe" style="font-size: 24px;"></span>
@@ -62,24 +62,32 @@
           </button>
         </div>
 
-        <!-- CNIC input -->
-        <div style="margin-bottom: 20px; width: 100%; max-width: 600px;">
-          <label for="cnic" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">CNIC Number</label>
-          <input id="cnic" type="text" placeholder="XXXXX-XXXXXXX-X" data-bind="value: cnicNumber"
-                 style="width: 100%; max-width: 360px; border-radius: 10px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
-          <div style="font-size: 0.8rem; color:#666; margin-top:6px;">Please enter your 13-digit CNIC number</div>
+        <!-- CNIC input - only show for Individual -->
+        <div data-bind="visible: showCNICField" style="margin-bottom: 20px; width: 100%; max-width: 600px;">
+          <!-- CNIC field for Individual -->
+          <div data-bind="visible: showCNICField">
+            <label for="cnic" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">CNIC Number</label>
+            <input id="cnic" type="text" placeholder="XXXXX-XXXXXXX-X" data-bind="value: cnicNumber"
+                   style="width: 100%; max-width: 360px; border-radius: 10px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
+            <div style="font-size: 0.8rem; color:#666; margin-top:6px;">Please enter your 13-digit CNIC number</div>
 
-          <!-- CNIC Validation Message -->
-          <div data-bind="visible: cnicValidationMessage, text: cnicValidationMessage"
-               style="margin-top: 8px; font-size: 0.9rem; font-weight: 500;"
-               data-bind="style: { color: isCNICValid() ? '#28a745' : '#dc3545' }">
-          </div>
+            <!-- CNIC Validation Message -->
+            <div data-bind="visible: cnicValidationMessage, text: cnicValidationMessage"
+                 style="margin-top: 8px; font-size: 0.9rem; font-weight: 500;"
+                 data-bind="style: { color: isCNICValid() ? '#28a745' : '#dc3545' }">
+            </div>
 
-          <!-- Loading indicator for CNIC validation -->
-          <div data-bind="visible: isValidatingCNIC" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-            <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <span style="font-size: 0.9rem; color: #6e1e7d;">Validating...</span>
+            <!-- Loading indicator for CNIC validation -->
+            <div data-bind="visible: isValidatingCNIC" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+              <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+              <span style="font-size: 0.9rem; color: #6e1e7d;">Validating...</span>
+            </div>
           </div>
+        </div>
+
+        <!-- Placeholder for Sole Proprietor and Foreign National -->
+        <div data-bind="visible: showPlaceholder" style="padding: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; text-align: center;">
+          <div style="font-size: 1.1rem; color: #6c757d; font-style: italic;">this is a placeholder</div>
         </div>
 
         <!-- Action buttons -->
@@ -96,9 +104,9 @@
       </div>
 
       <div style="flex: 1;"></div>
-      
+
       <!-- CNIC Guidance Panel -->
-      <div style="flex: 1; display: flex; justify-content: center; align-items: flex-start;  margin-top:65px;">
+      <div style="flex: 1; display: flex; justify-content: center; align-items: flex-start; margin-top:65px;">
         <div style="border:1px solid #ddd; border-radius: 12px; padding: 16px; background:#fff; width: 260px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
           <img src="../../css/images/CNIC_Guidance.png" alt="CNIC Guidance" style="width:100%; border-radius:8px; margin-bottom:12px;">
           <div style="font-size: 1rem; font-weight: 600; color:#6e1e7d; margin-bottom:1px;">Find your CNIC Identity Number</div>

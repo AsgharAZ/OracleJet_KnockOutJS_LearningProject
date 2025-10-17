@@ -14,28 +14,39 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     // Try to get parent from params first
     if (params && params.parent) {
       self.parent = params.parent;
+      console.log("✅ Parent received via params:", self.parent);
     } else {
       // Fallback: try to get parent from global appRouter
       if (window.appRouter && window.appRouter.parent) {
         self.parent = window.appRouter.parent;
+        console.log("✅ Parent received via window.appRouter:", self.parent);
+      } else if (window.controllerViewModel) {
+        self.parent = window.controllerViewModel;
+        console.log("✅ Parent received via window.controllerViewModel:", self.parent);
       } else {
         console.warn("⚠️ No parent passed to AccountTypeViewModel");
         self.parent = null; // fallback to null so code doesn't crash
       }
     }
 
+    console.log("Final parent object:", self.parent);
+    console.log("Parent has wizardData:", self.parent ? !!self.parent.wizardData : 'No parent');
 
-    if (self.parent) {
-      console.log("Parent received in AccountType:", self.parent);
-    } else {
-      console.warn("No parent passed to account_type.js");
-    }
-
-    // Selected account type
-    self.selectedAccountType = ko.observable('');
+    // Selected account type - default to Individual
+    self.selectedAccountType = ko.observable('Individual');
 
     // CNIC input
     self.cnicNumber = ko.observable('');
+
+    // Computed observable to determine if CNIC field should be shown
+    self.showCNICField = ko.computed(function() {
+      return self.selectedAccountType() === 'Individual';
+    });
+
+    // Computed observable to determine if placeholder should be shown
+    self.showPlaceholder = ko.computed(function() {
+      return self.selectedAccountType() === 'Sole Proprietor' || self.selectedAccountType() === 'Foreign National';
+    });
 
     // Loading and validation states
     self.isValidatingCNIC = ko.observable(false);
@@ -47,71 +58,109 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     self.selectSoleProprietor = () => self.selectedAccountType('Sole Proprietor');
     self.selectForeignNational = () => self.selectedAccountType('Foreign National');
 
-    // Validate CNIC against database
+    // Debounce timer for CNIC validation
+    self.cnicValidationTimeout = null;
+
+    // Validate CNIC against database with debouncing
     self.validateCNIC = function() {
       const cnic = self.cnicNumber();
       if (!cnic) {
         self.cnicValidationMessage('');
         self.isCNICValid(false);
-        return;
-      }
-
-      const cnicPattern = /^(\d{13}|\d{5}-\d{7}-\d{1})$/;
-      if (!cnicPattern.test(cnic)) {
-        self.cnicValidationMessage('Please enter a valid CNIC number (XXXXX-XXXXXXX-X).');
-        self.isCNICValid(false);
+        self.resetCNICBorder();
         return;
       }
 
       // Remove dashes for API call
       const cleanCNIC = cnic.replace(/-/g, '');
 
+      // Basic format validation
+      const cnicPattern = /^\d{13}$/;
+      if (!cnicPattern.test(cleanCNIC)) {
+        self.cnicValidationMessage('Please enter a valid 13-digit CNIC number.');
+        self.isCNICValid(false);
+        self.resetCNICBorder();
+        return;
+      }
+
       self.isValidatingCNIC(true);
       self.cnicValidationMessage('Validating CNIC...');
 
-      // Make API call to validate CNIC
-      fetch('http://localhost:8080/api/v1/customers')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch customer data');
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('API Response:', data);
+      // Clear previous timeout
+      if (self.cnicValidationTimeout) {
+        clearTimeout(self.cnicValidationTimeout);
+      }
 
-          // Find customer by ID (CNIC)
-          const customer = data.find(c => c.id.toString() === cleanCNIC);
-
-          if (customer) {
-            self.cnicValidationMessage('✓ CNIC verified successfully');
-            self.isCNICValid(true);
-
-            // Store customer data for later use in shared wizard data
-            self.customerData = customer;
-            console.log("🔥 Storing customer data:", customer);
-            console.log("🔥 Parent object:", self.parent);
-            console.log("🔥 Parent wizardData:", self.parent ? self.parent.wizardData : 'No parent');
-
-            if (self.parent && self.parent.wizardData) {
-              self.parent.wizardData.customerData(customer);
-              console.log("✅ Customer data stored successfully in wizardData");
-            } else {
-              console.log("❌ Failed to store customer data - parent or wizardData missing");
+      // Set new timeout for debouncing (500ms)
+      self.cnicValidationTimeout = setTimeout(() => {
+        // Make API call to validate CNIC using new endpoint
+        fetch(`http://localhost:8080/api/v1/customers/validate/${cleanCNIC}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to validate CNIC');
             }
-          } else {
-            self.cnicValidationMessage('✗ CNIC not found in database');
+            return response.json();
+          })
+          .then(data => {
+            console.log('CNIC Validation API Response:', data);
+
+            if (data.statusCode === 'SUCCESS') {
+              self.cnicValidationMessage('✓ CNIC verified successfully');
+              self.isCNICValid(true);
+              self.setValidCNICBorder();
+
+              // Store customer data for later use in shared wizard data
+              if (self.parent && self.parent.wizardData) {
+                // Create a customer object from the validation data
+                const customerData = {
+                  id: cleanCNIC, // The CNIC number that was validated
+                  username: 'fetched_from_db', // This will be fetched in the next screen
+                  // Add other customer fields as needed
+                };
+                self.parent.wizardData.customerData(customerData);
+                console.log("✅ Customer data stored successfully in wizardData");
+                console.log("Stored customer data:", customerData);
+              } else {
+                console.log("❌ Failed to store customer data - parent or wizardData missing");
+                console.log("Parent object:", self.parent);
+                console.log("Parent wizardData:", self.parent ? self.parent.wizardData : 'No parent');
+              }
+            } else {
+              self.cnicValidationMessage(`✗ ${data.message}`);
+              self.isCNICValid(false);
+              self.resetCNICBorder();
+            }
+          })
+          .catch(error => {
+            console.error('CNIC validation error:', error);
+            self.cnicValidationMessage('✗ Error validating CNIC. Please try again.');
             self.isCNICValid(false);
-          }
-        })
-        .catch(error => {
-          console.error('CNIC validation error:', error);
-          self.cnicValidationMessage('✗ Error validating CNIC. Please try again.');
-          self.isCNICValid(false);
-        })
-        .finally(() => {
-          self.isValidatingCNIC(false);
-        });
+            self.resetCNICBorder();
+          })
+          .finally(() => {
+            self.isValidatingCNIC(false);
+          });
+      }, 500); // 500ms debounce delay
+    };
+
+    // Set light green border for valid CNIC
+    self.setValidCNICBorder = function() {
+      setTimeout(() => {
+        const cnicField = document.getElementById('cnicNumber') || document.querySelector('input[data-bind*="cnicNumber"]');
+        if (cnicField) {
+          cnicField.style.borderColor = '#90EE90'; // Light green
+        }
+      }, 100);
+    };
+
+    // Reset border color
+    self.resetCNICBorder = function() {
+      setTimeout(() => {
+        const cnicField = document.getElementById('cnicNumber') || document.querySelector('input[data-bind*="cnicNumber"]');
+        if (cnicField) {
+          cnicField.style.borderColor = '#ccc';
+        }
+      }, 100);
     };
 
     // Subscribe to CNIC changes for real-time validation
@@ -134,14 +183,17 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
         return;
       }
 
-      if (!self.cnicNumber()) {
-        alert('Please enter your CNIC number.');
-        return;
-      }
+      // Only validate CNIC for Individual account type
+      if (self.selectedAccountType() === 'Individual') {
+        if (!self.cnicNumber()) {
+          alert('Please enter your CNIC number.');
+          return;
+        }
 
-      if (!self.isCNICValid()) {
-        alert('Please enter a valid CNIC number that exists in our database.');
-        return;
+        if (!self.isCNICValid()) {
+          alert('Please enter a valid CNIC number that exists in our database.');
+          return;
+        }
       }
 
       if (self.parent && typeof self.parent.nextStep === 'function') {

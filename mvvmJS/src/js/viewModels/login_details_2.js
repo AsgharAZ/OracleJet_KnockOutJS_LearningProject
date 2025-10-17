@@ -202,6 +202,20 @@ define(['knockout'], function(ko) {
       }
     });
 
+    // SHA-256 hash function
+    self.hashPassword = function(password) {
+      // Use Web Crypto API for SHA-256 hashing
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      return crypto.subtle.digest('SHA-256', data)
+        .then(hash => {
+          // Convert hash to hex string
+          return Array.from(new Uint8Array(hash))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+        });
+    };
+
     // Update Password button
     self.updatePassword = function () {
       console.log("🔥🔥🔥 UPDATE PASSWORD BUTTON CLICKED - DEBUGGING START 🔥🔥🔥");
@@ -252,67 +266,78 @@ define(['knockout'], function(ko) {
         return;
       }
 
-      console.log("✅ Password update validation passed, updating password...");
+      console.log("✅ Password update validation passed, hashing password...");
       console.log("Customer data available:", customer);
 
       self.isUpdatingPassword(true);
-      self.passwordUpdateMessage('Updating password...');
+      self.passwordUpdateMessage('Hashing password and updating...');
 
-      // Prepare the update payload
-      const updatePayload = {
-        id: customer.id,
-        account_number: customer.account_number,
-        username: customer.username,
-        password: newPwd  // Update with new password
-      };
+      // Hash the password using SHA-256 before sending to backend
+      self.hashPassword(newPwd)
+        .then(hashedPassword => {
+          console.log("✅ Password hashed successfully");
 
-      console.log('Update payload:', updatePayload);
+          // Prepare the update payload with hashed password
+          const updatePayload = {
+            id: customer.id,
+            username: customer.username,
+            password: hashedPassword  // Update with hashed password
+          };
 
-      // Make PUT request to update password
-      fetch('http://localhost:8080/api/v1/customers', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatePayload)
-      })
-      .then(response => {
-        console.log("PUT response status:", response.status);
-        console.log("PUT response ok:", response.ok);
+          console.log('Update payload:', { ...updatePayload, password: '[HASHED]' });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Password update successful:', data);
-        self.passwordUpdateMessage('✓ Password updated successfully!');
+          // Make PUT request to update password
+          return fetch(`http://localhost:8080/api/v1/customers/${customer.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatePayload)
+          })
+          .then(response => {
+            console.log("PUT response status:", response.status);
+            console.log("PUT response ok:", response.ok);
 
-        // Navigate to successful registration page after a short delay
-        setTimeout(() => {
-          if (window.appRouter && typeof window.appRouter.go === 'function') {
-            try {
-              window.appRouter.go({ path: 'successful_registration' });
-              console.log("Navigation to successful registration successful");
-            } catch (err) {
-              console.error('Navigation to successful registration failed:', err);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
             }
-          } else {
-            console.error("Router not available for navigation");
-            // Fallback: direct hash navigation
-            window.location.hash = '#/successful_registration';
-          }
-        }, 1500);
-      })
-      .catch(error => {
-        console.error('Password update error:', error);
-        self.passwordUpdateMessage('✗ Error updating password. Please try again.');
-        alert('Failed to update password. Please check your connection and try again.');
-      })
-      .finally(() => {
-        self.isUpdatingPassword(false);
-      });
+            return response.json();
+          })
+          .then(data => {
+            console.log('Password update successful:', data);
+            self.passwordUpdateMessage('✓ Password updated successfully!');
+
+            // Navigate to successful registration page after a short delay
+            setTimeout(() => {
+              if (window.appRouter && typeof window.appRouter.go === 'function') {
+                try {
+                  window.appRouter.go({ path: 'successful_registration' });
+                  console.log("Navigation to successful registration successful");
+                } catch (err) {
+                  console.error('Navigation to successful registration failed:', err);
+                }
+              } else {
+                console.error("Router not available for navigation");
+                // Fallback: direct hash navigation
+                window.location.hash = '#/successful_registration';
+              }
+            }, 1500);
+          })
+          .catch(error => {
+            console.error('Password update error:', error);
+            self.passwordUpdateMessage('✗ Error updating password. Please try again.');
+            alert('Failed to update password. Please check your connection and try again.');
+            throw error; // Re-throw to be caught by outer catch
+          });
+        })
+        .catch(error => {
+          console.error('Password hashing or update error:', error);
+          self.passwordUpdateMessage('✗ Error processing password. Please try again.');
+          alert('Failed to process password. Please check your input and try again.');
+        })
+        .finally(() => {
+          self.isUpdatingPassword(false);
+        });
     };
 
     // Initialize password strength on load
