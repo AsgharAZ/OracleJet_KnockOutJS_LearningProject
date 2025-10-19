@@ -18,11 +18,20 @@ function(accUtils, ko) {
 
     // Account details form fields
     self.accountNumber = ko.observable('');
+    self.ibanNumber = ko.observable('');
+
+    // Account type selection (Account Number or IBAN)
+    self.selectedAccountType = ko.observable('accountNumber');
 
     // Loading and validation states
     self.isValidatingAccount = ko.observable(false);
     self.accountValidationMessage = ko.observable('');
     self.isAccountValid = ko.observable(false);
+
+    // IBAN validation states
+    self.isValidatingIBAN = ko.observable(false);
+    self.ibanValidationMessage = ko.observable('');
+    self.isIBANValid = ko.observable(false);
 
     // Get customer data from shared wizard data (set during CNIC validation)
     self.customerData = ko.computed(() => {
@@ -158,6 +167,147 @@ function(accUtils, ko) {
     // Subscribe to account number changes for real-time validation
     self.accountNumber.subscribe(self.validateAccountNumber);
 
+    // Computed observables for UI state
+    self.showAccountNumber = ko.computed(() => self.selectedAccountType() === 'accountNumber');
+    self.showIBAN = ko.computed(() => self.selectedAccountType() === 'iban');
+
+    // Debounce timer for IBAN validation
+    self.ibanValidationTimeout = null;
+
+    // Validate IBAN against database with debouncing
+    self.validateIBAN = function() {
+      const iban = self.ibanNumber();
+      if (!iban) {
+        self.ibanValidationMessage('');
+        self.isIBANValid(false);
+        self.resetIBANBorder();
+        return;
+      }
+
+      // Basic format validation using the specified regex
+      const ibanPattern = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{10,30}$/;
+      if (!ibanPattern.test(iban)) {
+        self.ibanValidationMessage('IBAN must start with 2 letters (country code), followed by 2 digits (check digits), then 10–30 alphanumeric characters');
+        self.isIBANValid(false);
+        self.setInvalidIBANBorder();
+        return;
+      }
+
+      // Length validation (14-34 characters)
+      if (iban.length < 14 || iban.length > 34) {
+        self.ibanValidationMessage('IBAN must be between 14-34 characters long');
+        self.isIBANValid(false);
+        self.setInvalidIBANBorder();
+        return;
+      }
+
+      self.isValidatingIBAN(true);
+      self.ibanValidationMessage('Validating IBAN...');
+
+      // Clear previous timeout
+      if (self.ibanValidationTimeout) {
+        clearTimeout(self.ibanValidationTimeout);
+      }
+
+      // Set new timeout for debouncing (500ms)
+      self.ibanValidationTimeout = setTimeout(() => {
+        // Get CNIC from customer data
+        const customerData = self.customerData();
+        if (!customerData) {
+          self.ibanValidationMessage('✗ Customer data not available. Please go back and re-enter CNIC.');
+          self.isIBANValid(false);
+          self.setInvalidIBANBorder();
+          self.isValidatingIBAN(false);
+          return;
+        }
+
+        const cnic = customerData.id;
+
+        // Make API call to validate IBAN with CNIC using the provided endpoint
+        fetch(`http://localhost:8080/validate/${iban}/${cnic}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to validate IBAN');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('IBAN Validation API Response:', data);
+
+            if (data.statusCode === 'SUCCESS') {
+              self.ibanValidationMessage('✓ IBAN verified successfully');
+              self.isIBANValid(true);
+              self.setValidIBANBorder();
+            } else {
+              self.ibanValidationMessage(`✗ ${data.message}`);
+              self.isIBANValid(false);
+              self.setInvalidIBANBorder();
+            }
+          })
+          .catch(error => {
+            console.error('IBAN validation error:', error);
+            self.ibanValidationMessage('✗ Error validating IBAN. Please try again.');
+            self.isIBANValid(false);
+            self.setInvalidIBANBorder();
+          })
+          .finally(() => {
+            self.isValidatingIBAN(false);
+          });
+      }, 500); // 500ms debounce delay
+    };
+
+    // Set light green border for valid IBAN
+    self.setValidIBANBorder = function() {
+      setTimeout(() => {
+        const ibanField = document.getElementById('ibanNumber') || document.querySelector('input[data-bind*="ibanNumber"]');
+        if (ibanField) {
+          ibanField.style.borderColor = '#90EE90'; // Light green
+        }
+      }, 100);
+    };
+
+    // Set red border for invalid IBAN
+    self.setInvalidIBANBorder = function() {
+      setTimeout(() => {
+        const ibanField = document.getElementById('ibanNumber') || document.querySelector('input[data-bind*="ibanNumber"]');
+        if (ibanField) {
+          ibanField.style.borderColor = '#dc3545'; // Red
+        }
+      }, 100);
+    };
+
+    // Reset IBAN border color
+    self.resetIBANBorder = function() {
+      setTimeout(() => {
+        const ibanField = document.getElementById('ibanNumber') || document.querySelector('input[data-bind*="ibanNumber"]');
+        if (ibanField) {
+          ibanField.style.borderColor = '#ccc';
+        }
+      }, 100);
+    };
+
+    // Subscribe to IBAN changes for real-time validation
+    self.ibanNumber.subscribe(self.validateIBAN);
+
+    // Tab selection methods
+    self.selectAccountNumber = function() {
+      self.selectedAccountType('accountNumber');
+      // Clear IBAN validation when switching tabs
+      self.ibanNumber('');
+      self.ibanValidationMessage('');
+      self.isIBANValid(false);
+      self.resetIBANBorder();
+    };
+
+    self.selectIBAN = function() {
+      self.selectedAccountType('iban');
+      // Clear account number validation when switching tabs
+      self.accountNumber('');
+      self.accountValidationMessage('');
+      self.isAccountValid(false);
+      self.resetAccountBorder();
+    };
+
     this.connected = () => {
       console.log('Account Details ViewModel loaded'); // Debug log
       accUtils.announce('Account Details page loaded.', 'assertive');
@@ -195,14 +345,27 @@ function(accUtils, ko) {
 
     // Next button
     self.goNext = function () {
-      if (!self.accountNumber()) {
-        alert('Please enter your account number.');
-        return;
-      }
+      // Validate based on selected account type
+      if (self.selectedAccountType() === 'accountNumber') {
+        if (!self.accountNumber()) {
+          alert('Please enter your account number.');
+          return;
+        }
 
-      if (!self.isAccountValid()) {
-        alert('Please enter a valid account number that matches your CNIC.');
-        return;
+        if (!self.isAccountValid()) {
+          alert('Please enter a valid account number that matches your CNIC.');
+          return;
+        }
+      } else if (self.selectedAccountType() === 'iban') {
+        if (!self.ibanNumber()) {
+          alert('Please enter your IBAN.');
+          return;
+        }
+
+        if (!self.isIBANValid()) {
+          alert('Please enter a valid IBAN that matches your CNIC.');
+          return;
+        }
       }
 
       if (self.parent && typeof self.parent.nextStep === 'function') {

@@ -64,16 +64,20 @@
 
         <!-- Tabs (Account Number / IBAN) -->
         <div style="display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid #eee; width: 100%; max-width: 400px;">
-          <button type="button" style="flex:1; padding:10px; font-size:1rem; font-weight:600; color:#6e1e7d; border:none; border-bottom:3px solid #6e1e7d; background:#fff; cursor:pointer;">
+          <button type="button"
+                  data-bind="click: selectAccountNumber, css: { 'active-tab': selectedAccountType() === 'accountNumber' }"
+                  style="flex:1; padding:10px; font-size:1rem; font-weight:600; color:#6e1e7d; border:none; border-bottom:3px solid #6e1e7d; background:#fff; cursor:pointer;">
             Account Number
           </button>
-          <button type="button" style="flex:1; padding:10px; font-size:1rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer;">
+          <button type="button"
+                  data-bind="click: selectIBAN, css: { 'active-tab': selectedAccountType() === 'iban' }"
+                  style="flex:1; padding:10px; font-size:1rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer;">
             IBAN
           </button>
         </div>
 
         <!-- Account Number Input -->
-        <div style="margin-bottom: 20px; width: 100%; max-width: 400px;">
+        <div data-bind="visible: showAccountNumber" style="margin-bottom: 20px; width: 100%; max-width: 400px;">
           <label for="accountNumber" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
             Account Number
           </label>
@@ -91,6 +95,30 @@
 
           <!-- Loading indicator for account validation -->
           <div data-bind="visible: isValidatingAccount" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span style="font-size: 0.9rem; color: #6e1e7d;">Validating...</span>
+          </div>
+        </div>
+
+        <!-- IBAN Input -->
+        <div data-bind="visible: showIBAN" style="margin-bottom: 20px; width: 100%; max-width: 400px;">
+          <label for="ibanNumber" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
+            IBAN
+          </label>
+          <input id="ibanNumber" type="text" placeholder="PK36SCBL0000001123456702" data-bind="value: ibanNumber"
+                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none; text-transform: uppercase;">
+          <div style="font-size: 0.8rem; color:#666; margin-top:6px;">
+            Please enter your IBAN (14-34 characters)
+          </div>
+
+          <!-- IBAN Validation Message -->
+          <div data-bind="visible: ibanValidationMessage, text: ibanValidationMessage"
+               style="margin-top: 8px; font-size: 0.9rem; font-weight: 500;"
+               data-bind="style: { color: isIBANValid() ? '#28a745' : '#dc3545' }">
+          </div>
+
+          <!-- Loading indicator for IBAN validation -->
+          <div data-bind="visible: isValidatingIBAN" style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
             <div style="width: 16px; height: 16px; border: 2px solid #f3f3f3; border-top: 2px solid #6e1e7d; border-radius: 50%; animation: spin 1s linear infinite;"></div>
             <span style="font-size: 0.9rem; color: #6e1e7d;">Validating...</span>
           </div>

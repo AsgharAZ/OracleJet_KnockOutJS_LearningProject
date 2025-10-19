@@ -3,7 +3,7 @@
 /* Dashboard background wrapper */
 .dashboard-bg-wrapper {
   background-image: url('images/MezanBank_Background.png');
-  background-size: contain;
+  background-size: cover; /* contain*/
   background-repeat: no-repeat;
   background-position: center;
   position: fixed;
@@ -108,4 +108,12 @@ html[dir="rtl"] .demo-oracle-icon {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Active tab styling for Account Details */
+.active-tab {
+  color: #6e1e7d !important;
+  border-bottom: 3px solid #6e1e7d !important;
+  background: #fff !important;
+  font-weight: 600 !important;
 }
