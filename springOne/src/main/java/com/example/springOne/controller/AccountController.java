@@ -1,10 +1,12 @@
 package com.example.springOne.controller;
 
+import com.example.springOne.dto.AccountSummaryDTO;
 import com.example.springOne.entity.Account;
 import com.example.springOne.entity.Customer;
 import com.example.springOne.repository.AccountRepository;
 import com.example.springOne.repository.CustomerRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -93,6 +95,8 @@ public class AccountController {
         return "✅ Account updated successfully!";
     }
 
+
+
     // VALIDATE ACCOUNT NUMBER WITH CNIC - New endpoint for frontend validation
     @GetMapping("/validate/{accountNumber}/{cnic}")
     public ValidationResponse validateAccountWithCNIC(@PathVariable("accountNumber") Long accountNumber, @PathVariable("cnic") Long cnic) {
@@ -112,7 +116,58 @@ public class AccountController {
         } catch (Exception e) {
             return new ValidationResponse("ERROR", "Error validating account number: " + e.getMessage(), false);
         }
+
     }
+    // VALIDATE IBAN WITH CNIC - New endpoint for frontend validation
+    @GetMapping("/validate/iban/{iban}/{cnic}")
+    public ValidationResponse validateIbanWithCNIC(@PathVariable("iban") String iban, @PathVariable("cnic") Long cnic) {
+        try {
+            // Find the account by IBAN
+            Account account = accountRepository.findByIban(iban).orElse(null);
+
+            if (account == null) {
+                return new ValidationResponse("ERROR", "IBAN not found in database", false);
+            }
+
+
+            // Check if account belongs to the provided CNIC
+            if (!account.getCustomer().getId().equals(cnic)) {
+                return new ValidationResponse("ERROR", "IBAN does not belong to the provided CNIC", false);
+            }
+
+            return new ValidationResponse("SUCCESS", "IBAN verified successfully", true);
+
+        } catch (Exception e) {
+            return new ValidationResponse("ERROR", "Error validating IBAN: " + e.getMessage(), false);
+        }
+    }
+    @GetMapping("/summary/{cnic}")
+    public ResponseEntity<?> getAccountSummary(@PathVariable("cnic") Long cnic) {
+        List<AccountSummaryDTO> summary = accountRepository.findAccountSummaryByCnic(cnic);
+        if (summary.isEmpty()) {
+            return ResponseEntity.status(404).body("No accounts found for CNIC: " + cnic);
+        }
+        return ResponseEntity.ok(summary);
+    }
+
+    record UsernameResponse(String username, String message) {}
+
+
+    @GetMapping("/username/{cnic}/{accountNumber}")
+    public ResponseEntity<?> getUsernameByCnicAndAccount(
+            @PathVariable Long cnic,
+            @PathVariable Long accountNumber) {
+
+        String username = accountRepository.findUsernameByCnicAndAccountNumber(cnic, accountNumber);
+
+        if (username == null) {
+            return ResponseEntity.status(404).body("No user found for given CNIC and account number");
+        }
+        return ResponseEntity.ok(username);
+    }
+
+
+
 
     // Validation response record
     record ValidationResponse(
@@ -121,4 +176,3 @@ public class AccountController {
             boolean isValid
     ) {}
 }
-    

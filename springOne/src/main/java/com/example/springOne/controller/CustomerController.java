@@ -10,6 +10,9 @@ import java.util.List;
 @RequestMapping("api/v1/customers")
 public class CustomerController {
 
+    // API Response record for consistent JSON responses
+    record ApiResponse(String statusCode, String message) {}
+
     //We have to inject
     private final CustomerRepository customerRepository;
 
@@ -86,22 +89,29 @@ public class CustomerController {
 //        }
 //    }
 
+    // DTO for password update requests
+    record PasswordUpdateRequest(String password) {}
+
     @PutMapping("/{customerId}/password")
-    public ResponseEntity<Customer> updatePassword(@PathVariable Long customerId, @RequestBody Customer customerUpdate) {
-        Customer existingCustomer = customerRepository.findById(customerId).orElse(null);
+    public ResponseEntity<ApiResponse> updatePassword(@PathVariable Long customerId, @RequestBody PasswordUpdateRequest passwordRequest) {
+        try {
+            Customer existingCustomer = customerRepository.findById(customerId).orElse(null);
 
-        if (existingCustomer == null) {
-            return ResponseEntity.notFound().build();
+            if (existingCustomer == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            if (passwordRequest.password() == null || passwordRequest.password().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(new ApiResponse("ERROR", "Password cannot be empty"));
+            }
+
+            existingCustomer.setPassword(passwordRequest.password().trim());
+            customerRepository.save(existingCustomer);
+
+            return ResponseEntity.ok(new ApiResponse("SUCCESS", "Password updated successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ApiResponse("ERROR", "Error updating password: " + e.getMessage()));
         }
-
-        if (customerUpdate.getPassword() == null || customerUpdate.getPassword().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        existingCustomer.setPassword(customerUpdate.getPassword());
-        customerRepository.save(existingCustomer);
-
-        return ResponseEntity.ok(existingCustomer);
     }
 
 

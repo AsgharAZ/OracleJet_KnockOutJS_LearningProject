@@ -223,8 +223,8 @@ function(accUtils, ko) {
 
         const cnic = customerData.id;
 
-        // Make API call to validate IBAN with CNIC using the provided endpoint
-        fetch(`http://localhost:8080/validate/${iban}/${cnic}`)
+        // Make API call to validate IBAN with CNIC using the correct endpoint
+        fetch(`http://localhost:8080/api/v1/accounts/validate/iban/${iban}/${cnic}`)
           .then(response => {
             if (!response.ok) {
               throw new Error('Failed to validate IBAN');
@@ -370,6 +370,18 @@ function(accUtils, ko) {
 
       if (self.parent && typeof self.parent.nextStep === 'function') {
         console.log("Next clicked, calling parent.nextStep()");
+
+        // Store account details in wizard data for successful_registration page
+        if (self.parent.wizardData) {
+          const accountDetails = {
+            accountNumber: self.accountNumber(),
+            ibanNumber: self.ibanNumber(),
+            selectedAccountType: self.selectedAccountType()
+          };
+          self.parent.wizardData.accountDetails = ko.observable(accountDetails);
+          console.log("✅ Stored account details in wizard data:", accountDetails);
+        }
+
         self.parent.nextStep();
       } else {
         console.error("Parent or nextStep is undefined!");

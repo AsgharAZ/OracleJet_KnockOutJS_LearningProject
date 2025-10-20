@@ -1,0 +1,173 @@
+
+Update Presentation:
+https://www.canva.com/design/DAG1GvaYR-k/cLQ5NoZSYkMabNXnzOeGWQ/edit
+
+How to access the database: 
+docker exec -it postgres bash
+psql –U amigoscode
+
+\l - list down all databases.
+
+
+CREATE OR REPLACE PROCEDURE insert_customers_and_accounts()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Insert customers
+    INSERT INTO customer (id, name, password, "phone number", username)
+    SELECT
+        1000000000000 + g,
+        'Customer_' || g,
+        encode(digest('Pass' || g, 'sha256'), 'hex'),
+        '+923000000' || lpad(g::text, 3, '0'),
+        'user' || g
+    FROM generate_series(1, 25) g;
+
+    -- Insert accounts
+    INSERT INTO accounts (account_number, account_type, digitally_active, iban, user_id)
+    SELECT
+        10000000000000 + g,
+        (g % 5) + 1,
+        (g % 2 = 0),
+        'PK36HABB000000000000' || lpad(g::text, 7, '0'),
+        1000000000000 + g
+    FROM generate_series(1, 25) g;
+END;
+$$;
+
+-- Execute the procedure
+CALL insert_customers_and_accounts();
+
+
+DELETE:------------------------------
+TRUNCATE TABLE accounts, customer RESTART IDENTITY CASCADE;
+
+
+
+INSERT MORE ACCOUNT TYPES-----------------------------------
+INSERT INTO accounts (account_number, account_type, digitally_active, iban, user_id)
+VALUES
+-- User 1000000000001 gets account types 3 and 4
+(10000000000026, 3, TRUE,  'PK36HABB0000000000000000026', 1000000000001),
+(10000000000027, 4, FALSE, 'PK36HABB0000000000000000027', 1000000000001),
+
+-- User 1000000000002 gets account types 1 and 5
+(10000000000028, 1, TRUE,  'PK36HABB0000000000000000028', 1000000000002),
+(10000000000029, 5, TRUE,  'PK36HABB0000000000000000029', 1000000000002),
+
+-- User 1000000000003 gets account type 2
+(10000000000030, 2, FALSE, 'PK36HABB0000000000000000030', 1000000000003),
+
+-- User 1000000000004 gets account types 1 and 3
+(10000000000031, 1, TRUE,  'PK36HABB0000000000000000031', 1000000000004),
+(10000000000032, 3, FALSE, 'PK36HABB0000000000000000032', 1000000000004),
+
+-- User 1000000000005 gets account types 4 and 5
+(10000000000033, 4, TRUE,  'PK36HABB0000000000000000033', 1000000000005),
+(10000000000034, 5, FALSE, 'PK36HABB0000000000000000034', 1000000000005),
+
+-- User 1000000000006 gets account type 1
+(10000000000035, 1, TRUE,  'PK36HABB0000000000000000035', 1000000000006),
+
+-- User 1000000000007 gets account type 2
+(10000000000036, 2, TRUE,  'PK36HABB0000000000000000036', 1000000000007),
+
+-- User 1000000000008 gets account type 5
+(10000000000037, 5, TRUE,  'PK36HABB0000000000000000037', 1000000000008),
+
+-- User 1000000000009 gets account types 1 and 3
+(10000000000038, 1, TRUE,  'PK36HABB0000000000000000038', 1000000000009),
+(10000000000039, 3, FALSE, 'PK36HABB0000000000000000039', 1000000000009),
+
+-- User 1000000000010 gets account type 2
+(10000000000040, 2, TRUE,  'PK36HABB0000000000000000040', 1000000000010);
+
+
+MATERIALIZED VIEW: ------------------------------------
+CREATE MATERIALIZED VIEW customer_account_view AS
+SELECT 
+    c.id AS customer_id,
+    c.name AS customer_name,
+    c.username,
+    c."phone number",
+    a.account_number,
+    a.account_type,
+    a.digitally_active,
+    a.iban
+FROM customer c
+JOIN accounts a ON c.id = a.user_id;
+
+
+To refresh it when data changes:-------------------------
+REFRESH MATERIALIZED VIEW customer_account_view;
+
+List all materialized view: -----------------------------
+\dm
+
+View structure like normal relation: --------------------
+\d customer_account_view
+SELECT * FROM customer_account_view;
+
+SEEING SAME USER HAVING DIFFERENT ACCOUNTS:----------------------------
+SELECT *
+FROM customer_account_view
+WHERE customer_id = 1000000000001;
+
+
+
+PHASE 5 requirement: ------------------
+CREATE OR REPLACE PROCEDURE sp_create_account(
+    p_cnic BIGINT,
+    p_account_number BIGINT,
+    p_username VARCHAR(255),
+    p_password VARCHAR(255)
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- 1️⃣ Insert into customer table
+    INSERT INTO customer (id, name, username, password, "phone number")
+    VALUES (
+        p_cnic,
+        'Customer_' || p_cnic,   -- auto-generate a name if not provided
+        p_username,
+        p_password,
+        '+923000000000'          -- placeholder phone number
+    );
+
+    -- 2️⃣ Insert into accounts table
+    INSERT INTO accounts (account_number, account_type, digitally_active, iban, user_id)
+    VALUES (
+        p_account_number,
+        1,                       -- default account type
+        TRUE,                    -- default digitally active
+        'PK36HABB000000000000' || LPAD(p_account_number::text, 7, '0'), -- generate IBAN
+        p_cnic                   -- link to customer
+    );
+
+    RAISE NOTICE 'Account % created successfully for CNIC %', p_account_number, p_cnic;
+END;
+$$;
+
+
+PHASE 6: -------------------------
+CREATE OR REPLACE VIEW vw_account_summary AS
+SELECT 
+    c.id AS cnic,
+    c.username,
+    c.name,
+    a.account_number,
+    a.account_type
+FROM customer c
+JOIN accounts a
+    ON c.id = a.user_id;
+
+
+
+AFTER CREATING THE VIEW ------------------
+SELECT * FROM vw_account_summary;
+
+
+
+PHASE 7: 
+GET http://localhost:8080/api/accounts/summary/1000000000001

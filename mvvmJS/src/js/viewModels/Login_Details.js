@@ -46,7 +46,7 @@ define(['knockout'], function(ko) {
       }
     });
 
-    // Fetch username from database
+    // Fetch username from database using secure endpoint
     self.fetchUsername = function() {
       const customer = self.customerData();
       if (!customer) {
@@ -57,23 +57,34 @@ define(['knockout'], function(ko) {
       self.isLoadingUsername(true);
       self.usernameFetchMessage('Fetching username...');
 
-      // Make API call to get fresh customer data and extract username
-      fetch('http://localhost:8080/api/v1/customers')
+      // Get account details from wizard data to use in API call
+      const accountDetails = self.getAccountDetails();
+      if (!accountDetails || (!accountDetails.accountNumber && !accountDetails.ibanNumber)) {
+        self.usernameFetchMessage('✗ Account details not available');
+        self.isLoadingUsername(false);
+        return;
+      }
+
+      // Use the secure endpoint that only returns username
+      const accountNumber = accountDetails.accountNumber;
+      const cnic = customer.id;
+
+      fetch(`http://localhost:8080/api/v1/accounts/username/${cnic}/${accountNumber}`)
         .then(response => {
           if (!response.ok) {
-            throw new Error('Failed to fetch customer data');
+            throw new Error('Failed to fetch username');
           }
-          return response.json();
+          return response.text(); // Username endpoint returns plain text
         })
-        .then(data => {
-          console.log('Username fetch API Response:', data);
+        .then(username => {
+          console.log('Username fetch successful:', username);
 
-          // Find customer by ID to get fresh data
-          const customerData = data.find(c => c.id.toString() === customer.id.toString());
+          if (username && username.trim()) {
+            self.username(username.trim());
+            self.usernameFetchMessage(`✓ Welcome, ${username.trim()}!`);
 
-          if (customerData && customerData.username) {
-            self.username(customerData.username);
-            self.usernameFetchMessage(`✓ Welcome, ${customerData.username}!`);
+            // Store the username in wizard data for use in successful_registration page
+            self.storeUsernameInWizardData(username.trim());
           } else {
             self.usernameFetchMessage('✗ Unable to fetch username');
           }
@@ -85,6 +96,47 @@ define(['knockout'], function(ko) {
         .finally(() => {
           self.isLoadingUsername(false);
         });
+    };
+
+    // Helper method to get account details from wizard data
+    self.getAccountDetails = function() {
+      // Try multiple ways to access account details
+      let accountDetails = null;
+
+      // Method 1: Through params.parent
+      if (self.parent && self.parent.wizardData && self.parent.wizardData.accountDetails) {
+        accountDetails = self.parent.wizardData.accountDetails();
+      }
+      // Method 2: Through window.appRouter.parent
+      else if (window.appRouter && window.appRouter.parent && window.appRouter.parent.wizardData && window.appRouter.parent.wizardData.accountDetails) {
+        accountDetails = window.appRouter.parent.wizardData.accountDetails();
+      }
+      // Method 3: Try to find it in the global scope
+      else if (window.controllerViewModel && window.controllerViewModel.wizardData && window.controllerViewModel.wizardData.accountDetails) {
+        accountDetails = window.controllerViewModel.wizardData.accountDetails();
+      }
+
+      return accountDetails;
+    };
+
+    // Helper method to store username in wizard data
+    self.storeUsernameInWizardData = function(username) {
+      // Update customer data with the fetched username
+      const customer = self.customerData();
+      if (customer) {
+        customer.username = username;
+
+        // Update the customer data in wizard data storage
+        if (self.parent && self.parent.wizardData && self.parent.wizardData.customerData) {
+          self.parent.wizardData.customerData(customer);
+          console.log('✅ Username stored in wizard data:', username);
+        }
+        // Fallback to global controller
+        else if (window.controllerViewModel && window.controllerViewModel.wizardData && window.controllerViewModel.wizardData.customerData) {
+          window.controllerViewModel.wizardData.customerData(customer);
+          console.log('✅ Username stored in global wizard data:', username);
+        }
+      }
     };
 
     // Continue to Login - navigate back to login page

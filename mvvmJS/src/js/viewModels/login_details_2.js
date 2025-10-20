@@ -286,13 +286,13 @@ define(['knockout'], function(ko) {
 
           console.log('Update payload:', { ...updatePayload, password: '[HASHED]' });
 
-          // Make PUT request to update password
-          return fetch(`http://localhost:8080/api/v1/customers/${customer.id}`, {
+          // Make PUT request to update password using the correct endpoint
+          return fetch(`http://localhost:8080/api/v1/customers/${customer.id}/password`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatePayload)
+            body: JSON.stringify({ password: hashedPassword })
           })
           .then(response => {
             console.log("PUT response status:", response.status);
