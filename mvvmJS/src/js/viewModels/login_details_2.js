@@ -13,6 +13,15 @@ define(['knockout'], function(ko) {
     self.passwordVisible = ko.observable(false);
     self.rePasswordVisible = ko.observable(false);
 
+    // Computed observables for button text
+    self.passwordToggleText = ko.computed(function() {
+      return self.passwordVisible() ? 'HIDE' : 'SHOW';
+    });
+
+    self.rePasswordToggleText = ko.computed(function() {
+      return self.rePasswordVisible() ? 'HIDE' : 'SHOW';
+    });
+
     // Password strength properties
     self.passwordStrengthText = ko.observable('');
     self.passwordStrengthColor = ko.observable('#666');

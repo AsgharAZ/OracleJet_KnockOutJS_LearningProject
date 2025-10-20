@@ -1,5 +1,36 @@
 
 
+/* CSS Custom Properties (Variables) for consistent theming */
+:root {
+  /* Primary Brand Colors */
+  --primary-purple: #6e1e7d;
+  --primary-green: #1ab437;
+  --success-green: #28a745;
+  --error-red: #dc3545;
+  --warning-orange: #fd7e14;
+
+  /* Neutral Colors */
+  --light-gray: #f8f9fa;
+  --medium-gray: #bbb;
+  --dark-gray: #666;
+  --text-dark: #333;
+
+  /* Background Colors */
+  --background-white: #fff;
+  --background-light: #f9f9f9;
+  --background-overlay: rgba(255,255,255,1);
+
+  /* Border Colors */
+  --border-light: #eee;
+  --border-medium: #ccc;
+  --border-dark: #ddd;
+
+  /* Shadow Colors */
+  --shadow-light: rgba(0,0,0,0.08);
+  --shadow-medium: rgba(0,0,0,0.12);
+  --shadow-purple: rgba(110, 30, 125, 0.3);
+}
+
 /* Dashboard background wrapper */
 .dashboard-bg-wrapper {
   background-image: url('images/MezanBank_Background.png');
@@ -98,10 +129,10 @@ html[dir="rtl"] .demo-oracle-icon {
 }
 
 .selected-btn {
-  border: 2px solid #6e1e7d !important;
+  border: 2px solid var(--primary-purple) !important;
   background: #fdf0fd !important;
-  color: #6e1e7d !important;
-  box-shadow: 0 0 8px rgba(110, 30, 125, 0.3);
+  color: var(--primary-purple) !important;
+  box-shadow: 0 0 8px var(--shadow-purple);
 }
 
 /* Loading spinner animation */
@@ -112,8 +143,65 @@ html[dir="rtl"] .demo-oracle-icon {
 
 /* Active tab styling for Account Details */
 .active-tab {
-  color: #6e1e7d !important;
-  border-bottom: 3px solid #6e1e7d !important;
-  background: #fff !important;
+  color: var(--primary-purple) !important;
+  border-bottom: 3px solid var(--primary-purple) !important;
+  background: var(--background-white) !important;
   font-weight: 600 !important;
 }
+
+/* Account type button icons styling - Tab style */
+.dashboard-content-box .active-account-type {
+  color: var(--primary-purple) !important;
+  border-bottom: 3px solid var(--primary-purple) !important;
+  background: var(--background-white) !important;
+  font-weight: 600 !important;
+}
+
+.dashboard-content-box .active-account-type img {
+  filter: grayscale(0%) opacity(1);
+  transform: scale(1.05);
+}
+
+.dashboard-content-box button img {
+  transition: all 0.3s ease;
+  filter: grayscale(0%);
+}
+
+.dashboard-content-box button:not(.active-account-type) img {
+  filter: grayscale(100%) opacity(0.6);
+}
+
+/* Locked button state styling */
+.dashboard-content-box .locked {
+  background-color: #bbb !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+
+.dashboard-content-box .locked:hover {
+  background-color: var(--medium-gray) !important;
+  transform: none !important;
+}
+
+/*
+** CSS Variables Usage Examples:
+**
+** In CSS:
+**   color: var(--primary-purple);
+**   background-color: var(--primary-green);
+**   border: 1px solid var(--border-medium);
+**   box-shadow: 0 2px 4px var(--shadow-light);
+**
+** In HTML (inline styles):
+**   style="color: var(--primary-purple); background: var(--background-white);"
+**
+** In HTML (data-bind style):
+**   data-bind="style: { color: '--primary-purple', backgroundColor: '--background-white' }"
+**
+** Benefits:
+**   - Consistent theming across the application
+**   - Easy to maintain and update colors
+**   - Single source of truth for color values
+**   - Better organization and readability
+*/

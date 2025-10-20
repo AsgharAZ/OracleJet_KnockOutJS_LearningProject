@@ -68,10 +68,9 @@
         <div style="position:relative; width:100%;">
           <input id="newPassword" type="password" placeholder="Enter new password" data-bind="value: newPassword, valueUpdate: 'input', event: { input: passwordStrength }"
                  style="width:80%; border:1px solid #ccc; border-radius:8px; padding:14px 80px 14px 16px; font-size:1rem; outline:none; transition: border-color 0.3s;">
-          <button type="button" data-bind="click: togglePasswordVisibility"
+          <button type="button" data-bind="click: togglePasswordVisibility, text: passwordToggleText"
                   style="position:absolute; top:50%; right:45px; transform:translateY(-50%);
                          background:none; border:none; color:#6e1e7d; font-weight:600; cursor:pointer; font-size:0.9rem;">
-            SHOW
           </button>
         </div>
 
@@ -101,10 +100,9 @@
         <div style="position:relative; width:100%;">
           <input id="rePassword" type="password" placeholder="Re-enter new password" data-bind="value: rePassword, valueUpdate: 'input'"
                  style="width:80%; border:1px solid #ccc; border-radius:8px; padding:14px 80px 14px 16px; font-size:1rem; outline:none; transition: border-color 0.3s;">
-          <button type="button" data-bind="click: toggleRePasswordVisibility"
+          <button type="button" data-bind="click: toggleRePasswordVisibility, text: rePasswordToggleText"
                   style="position:absolute; top:50%; right:45px; transform:translateY(-50%);
                          background:none; border:none; color:#6e1e7d; font-weight:600; cursor:pointer; font-size:0.9rem;">
-            SHOW
           </button>
         </div>
 
@@ -122,10 +120,10 @@
                        font-size:1rem; font-weight:600; cursor:pointer; flex:1;">
           Back to Username
         </button>
-        <button type="button" data-bind="click: updatePassword, enable: canUpdatePassword"
+        <button type="button" data-bind="click: updatePassword, enable: canUpdatePassword, css: { 'locked': !canUpdatePassword() }"
                 style="background:#1ab437; color:#fff; border:none; border-radius:8px; padding:14px 32px;
                        font-size:1rem; font-weight:600; cursor:pointer; flex:1;"
-                data-bind="css: { 'disabled': !canUpdatePassword() }">
+                data-bind="style: { backgroundColor: canUpdatePassword() ? '#1ab437' : '#bbb', color: canUpdatePassword() ? '#fff' : '#fff' }">
           Update Password
         </button>
       </div>

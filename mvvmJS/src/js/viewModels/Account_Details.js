@@ -16,8 +16,9 @@ function(accUtils, ko) {
       }
     }
 
-    // Account details form fields
+    // Account details form fields with formatting
     self.accountNumber = ko.observable('');
+    self.accountNumberFormatted = ko.observable('');
     self.ibanNumber = ko.observable('');
 
     // Account type selection (Account Number or IBAN)
@@ -129,7 +130,7 @@ function(accUtils, ko) {
             } else {
               self.accountValidationMessage(`✗ ${data.message}`);
               self.isAccountValid(false);
-              self.resetAccountBorder();
+              self.setInvalidAccountBorder();
             }
           })
           .catch(error => {
@@ -154,6 +155,16 @@ function(accUtils, ko) {
       }, 100);
     };
 
+    // Set red border for invalid account number
+    self.setInvalidAccountBorder = function() {
+      setTimeout(() => {
+        const accountField = document.getElementById('accountNumber') || document.querySelector('input[data-bind*="accountNumber"]');
+        if (accountField) {
+          accountField.style.borderColor = '#dc3545'; // Red
+        }
+      }, 100);
+    };
+
     // Reset border color
     self.resetAccountBorder = function() {
       setTimeout(() => {
@@ -162,6 +173,50 @@ function(accUtils, ko) {
           accountField.style.borderColor = '#ccc';
         }
       }, 100);
+    };
+
+    // Account number formatting function
+    self.formatAccountNumber = function(value) {
+      // Remove all non-digits
+      let digits = value.replace(/\D/g, '');
+
+      // Limit to 14 digits
+      if (digits.length > 14) {
+        digits = digits.substring(0, 14);
+      }
+
+      // Apply formatting: XXXXX-XXXXXXXXX (5 digits - 9 digits)
+      if (digits.length <= 5) {
+        return digits;
+      } else {
+        return digits.substring(0, 5) + '-' + digits.substring(5);
+      }
+    };
+
+    // Handle account number input with formatting
+    self.handleAccountNumberInput = function(data, event) {
+      const input = event.target;
+      let value = input.value;
+
+      // Only allow numbers
+      value = value.replace(/\D/g, '');
+
+      // Limit to 14 digits
+      if (value.length > 14) {
+        value = value.substring(0, 14);
+      }
+
+      // Apply formatting
+      const formatted = self.formatAccountNumber(value);
+
+      // Update both observables
+      self.accountNumber(value); // Store raw digits for validation
+      self.accountNumberFormatted(formatted); // Store formatted version for display
+
+      // Update input field value
+      input.value = formatted;
+
+      return false;
     };
 
     // Subscribe to account number changes for real-time validation
@@ -288,6 +343,17 @@ function(accUtils, ko) {
 
     // Subscribe to IBAN changes for real-time validation
     self.ibanNumber.subscribe(self.validateIBAN);
+
+    // Computed observable to determine if Next button should be enabled
+    self.canProceed = ko.computed(function() {
+      // Validate based on selected account type
+      if (self.selectedAccountType() === 'accountNumber') {
+        return self.isAccountValid();
+      } else if (self.selectedAccountType() === 'iban') {
+        return self.isIBANValid();
+      }
+      return false;
+    });
 
     // Tab selection methods
     self.selectAccountNumber = function() {

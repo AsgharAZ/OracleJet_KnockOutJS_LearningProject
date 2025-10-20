@@ -229,12 +229,35 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
             console.log('Returned to login page, resetting wizard state');
             self.currentStep(self.steps[0]); // Reset to first wizard step
             self.currentIndex = 0;
-            console.log(currentIndex);
+            currentIndex = 0; // Reset the global currentIndex variable
+            console.log('Reset currentIndex to:', currentIndex);
           } else {
             self.currentStep(state.id);
+            // Sync global currentIndex with the current step
+            currentIndex = self.steps.indexOf(state.id);
+            self.currentIndex = currentIndex;
           }
         }
       });
+
+      // Additional reset mechanism for login page navigation
+      // Listen for specific navigation events or check current path
+      const originalGo = router.go.bind(router);
+      router.go = function(config) {
+        console.log('Router.go called with config:', config);
+
+        // Check if navigating to login page
+        if (config && config.path === 'login_Page') {
+          console.log('Navigating to login page, resetting wizard state');
+          self.currentStep(self.steps[0]); // Reset to first wizard step
+          self.currentIndex = 0;
+          currentIndex = 0; // Reset the global currentIndex variable
+          console.log('Reset currentIndex to:', currentIndex);
+        }
+
+        // Call original go method
+        return originalGo(config);
+      };
 
       // Also listen for ojRouter events
       document.addEventListener('ojRouterStateChanged', function(event) {

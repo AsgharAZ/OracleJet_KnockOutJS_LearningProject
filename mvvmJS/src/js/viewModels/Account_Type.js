@@ -35,8 +35,9 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     // Selected account type - default to Individual
     self.selectedAccountType = ko.observable('Individual');
 
-    // CNIC input
+    // CNIC input with formatting
     self.cnicNumber = ko.observable('');
+    self.cnicNumberFormatted = ko.observable('');
 
     // Computed observable to determine if CNIC field should be shown
     self.showCNICField = ko.computed(function() {
@@ -46,6 +47,25 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     // Computed observable to determine if placeholder should be shown
     self.showPlaceholder = ko.computed(function() {
       return self.selectedAccountType() === 'Sole Proprietor' || self.selectedAccountType() === 'Foreign National';
+    });
+
+    // Icon path computed observables
+    self.individualIcon = ko.computed(function() {
+      return self.selectedAccountType() === 'Individual'
+        ? 'css/images/AccountType_Icons/Individual-Icon-Filled.svg'
+        : 'css/images/AccountType_Icons/Individual-Icon-Unfilled.svg';
+    });
+
+    self.soleProprietorIcon = ko.computed(function() {
+      return self.selectedAccountType() === 'Sole Proprietor'
+        ? 'css/images/AccountType_Icons/Sole-Proprietor-Icon-Filled.svg'
+        : 'css/images/AccountType_Icons/Sole-Proprietor-Icon-Unfilled.svg';
+    });
+
+    self.foreignNationalIcon = ko.computed(function() {
+      return self.selectedAccountType() === 'Foreign National'
+        ? 'css/images/AccountType_Icons/Foreign-National-Icon-Filled.svg'
+        : 'css/images/AccountType_Icons/Foreign-National-Icon-Unfilled.svg';
     });
 
     // Loading and validation states
@@ -128,7 +148,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
             } else {
               self.cnicValidationMessage(`✗ ${data.message}`);
               self.isCNICValid(false);
-              self.resetCNICBorder();
+              self.setInvalidCNICBorder();
             }
           })
           .catch(error => {
@@ -153,6 +173,16 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
       }, 100);
     };
 
+    // Set red border for invalid CNIC
+    self.setInvalidCNICBorder = function() {
+      setTimeout(() => {
+        const cnicField = document.getElementById('cnicNumber') || document.querySelector('input[data-bind*="cnicNumber"]');
+        if (cnicField) {
+          cnicField.style.borderColor = '#dc3545'; // Red
+        }
+      }, 100);
+    };
+
     // Reset border color
     self.resetCNICBorder = function() {
       setTimeout(() => {
@@ -163,8 +193,68 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
       }, 100);
     };
 
+    // CNIC formatting function
+    self.formatCNIC = function(value) {
+      // Remove all non-digits
+      let digits = value.replace(/\D/g, '');
+
+      // Limit to 13 digits
+      if (digits.length > 13) {
+        digits = digits.substring(0, 13);
+      }
+
+      // Apply formatting: XXXXX-XXXXXXX-X
+      if (digits.length <= 5) {
+        return digits;
+      } else if (digits.length <= 12) {
+        return digits.substring(0, 5) + '-' + digits.substring(5);
+      } else {
+        return digits.substring(0, 5) + '-' + digits.substring(5, 12) + '-' + digits.substring(12);
+      }
+    };
+
+    // Handle CNIC input with formatting
+    self.handleCNICInput = function(data, event) {
+      const input = event.target;
+      let value = input.value;
+
+      // Only allow numbers
+      value = value.replace(/\D/g, '');
+
+      // Limit to 13 digits
+      if (value.length > 13) {
+        value = value.substring(0, 13);
+      }
+
+      // Apply formatting
+      const formatted = self.formatCNIC(value);
+
+      // Update both observables
+      self.cnicNumber(value); // Store raw digits for validation
+      self.cnicNumberFormatted(formatted); // Store formatted version for display
+
+      // Update input field value
+      input.value = formatted;
+
+      return false;
+    };
+
     // Subscribe to CNIC changes for real-time validation
     self.cnicNumber.subscribe(self.validateCNIC);
+
+    // Computed observable to determine if Next button should be enabled
+    self.canProceed = ko.computed(function() {
+      // Must have selected an account type
+      if (!self.selectedAccountType()) return false;
+
+      // For Individual account type, must have valid CNIC
+      if (self.selectedAccountType() === 'Individual') {
+        return self.isCNICValid();
+      }
+
+      // For other account types (Sole Proprietor, Foreign National), no additional validation needed
+      return true;
+    });
 
     // Back button
     self.goBack = function () {

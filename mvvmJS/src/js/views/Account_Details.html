@@ -81,8 +81,9 @@
           <label for="accountNumber" style="display:block; font-size: 0.95rem; font-weight: 500; margin-bottom: 6px; color:#333;">
             Account Number
           </label>
-          <input id="accountNumber" type="text" placeholder="XXXXX-XXXXXXXXX" data-bind="value: accountNumber"
-                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;">
+          <input id="accountNumber" type="text" placeholder="XXXXX-XXXXXXXXX" data-bind="value: accountNumberFormatted, event: { input: handleAccountNumberInput }"
+                 style="width: 100%; border-radius: 8px; border: 1px solid #ccc; padding: 12px 14px; font-size: 1rem; outline:none;"
+                 maxlength="16">
           <div style="font-size: 0.8rem; color:#666; margin-top:6px;">
             Please enter your 14 digit Account Number
           </div>
@@ -127,7 +128,11 @@
         <!-- Action buttons -->
         <div style="display:flex; justify-content: flex-start; gap: 9px; margin-top: 28px; width: 100%; max-width: 400px;">
           <button type="button" data-bind="click: goBack" style="background:#f2f2f2; color:#6e1e7d; border:none; border-radius: 10px; padding: 14px 70px; font-size: 1rem; font-weight: 600; cursor: pointer;">Back</button>
-          <button type="button" data-bind="click: goNext" style="background:#6e1e7d; color:#fff; border:none; border-radius: 10px; padding: 14px 105px; font-size: 1rem; font-weight: 600; cursor: pointer;">Next</button>
+          <button type="button" data-bind="click: goNext, css: { 'locked': !canProceed() }"
+                  style="background:#6e1e7d; color:#fff; border:none; border-radius: 10px; padding: 14px 105px; font-size: 1rem; font-weight: 600; cursor: pointer;"
+                  data-bind="style: { backgroundColor: canProceed() ? '#6e1e7d' : '#bbb', color: canProceed() ? '#fff' : '#fff' }">
+            Next
+          </button>
         </div>
       </div>
 
