@@ -38,27 +38,41 @@
         <!-- Title -->
         <h2 style="font-size: 1.6rem; text-align: left; font-weight: 700; margin-bottom: 18px; color:#333;">Select Account Type</h2>
 
-        <!-- Account type options - Tab style like Account Details -->
-        <div style="display: flex; gap: 0; margin-bottom: 26px; border-bottom: 2px solid #eee; width: 100%; max-width: 600px;">
+        <!-- Account type options - Optimized horizontal layout -->
+        <div style="display: flex; gap: 8px; margin-bottom: 26px; width: 100%; max-width: 900px; justify-content: flex-start;">
           <button type="button"
                   data-bind="click: selectIndividual, css: { 'active-account-type': selectedAccountType() === 'Individual' }"
-                  style="flex:1; padding:12px 16px; font-size:1rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
-            <img data-bind="attr: { src: individualIcon }" style="width: 40px; height: 40px;" alt="Individual Icon" />
+                  style="flex:1; min-width:0; padding:10px 6px; font-size:0.85rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <img data-bind="attr: { src: individualIcon }" style="width: 28px; height: 28px;" alt="Individual Icon" />
             <span>Individual</span>
           </button>
 
           <button type="button"
                   data-bind="click: selectSoleProprietor, css: { 'active-account-type': selectedAccountType() === 'Sole Proprietor' }"
-                  style="flex:1; padding:12px 16px; font-size:1rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
-            <img data-bind="attr: { src: soleProprietorIcon }" style="width: 40px; height: 40px;" alt="Sole Proprietor Icon" />
+                  style="flex:1; min-width:0; padding:10px 6px; font-size:0.85rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <img data-bind="attr: { src: soleProprietorIcon }" style="width: 28px; height: 28px;" alt="Sole Proprietor Icon" />
             <span>Sole Proprietor</span>
           </button>
 
           <button type="button"
                   data-bind="click: selectForeignNational, css: { 'active-account-type': selectedAccountType() === 'Foreign National' }"
-                  style="flex:1; padding:12px 16px; font-size:1rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
-            <img data-bind="attr: { src: foreignNationalIcon }" style="width: 40px; height: 40px;" alt="Foreign National Icon" />
+                  style="flex:1; min-width:0; padding:10px 6px; font-size:0.85rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <img data-bind="attr: { src: foreignNationalIcon }" style="width: 28px; height: 28px;" alt="Foreign National Icon" />
             <span>Foreign National</span>
+          </button>
+
+          <button type="button"
+                  data-bind="click: selectSavings, css: { 'active-account-type': selectedAccountType() === 'Savings' }"
+                  style="flex:1; min-width:0; padding:10px 6px; font-size:0.85rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <img data-bind="attr: { src: savingsIcon }" style="width: 28px; height: 28px;" alt="Savings Icon" />
+            <span>Savings</span>
+          </button>
+
+          <button type="button"
+                  data-bind="click: selectSmartWallet, css: { 'active-account-type': selectedAccountType() === 'Smart Wallet' }"
+                  style="flex:1; min-width:0; padding:10px 6px; font-size:0.85rem; font-weight:600; color:#666; border:none; border-bottom:3px solid transparent; background:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+            <img data-bind="attr: { src: smartWalletIcon }" style="width: 28px; height: 28px;" alt="Smart Wallet Icon" />
+            <span>Smart Wallet</span>
           </button>
         </div>
 
@@ -86,9 +100,9 @@
           </div>
         </div>
 
-        <!-- Placeholder for Sole Proprietor and Foreign National -->
-        <div data-bind="visible: showPlaceholder" style="padding: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; text-align: center;">
-          <div style="font-size: 1.1rem; color: #6c757d; font-style: italic;">this is a placeholder</div>
+        <!-- Dynamic placeholder for non-Individual account types -->
+        <div data-bind="visible: selectedAccountType() && selectedAccountType() !== 'Individual'" style="padding: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; text-align: center;">
+          <div style="font-size: 1.1rem; color: #6c757d; font-style: italic;" data-bind="text: placeholderText"></div>
         </div>
 
         <!-- Action buttons -->

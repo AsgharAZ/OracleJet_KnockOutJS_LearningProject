@@ -38,4 +38,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     """)
     String findUsernameByCnicAndAccountNumber(@Param("cnic") Long cnic,
                                               @Param("accountNumber") Long accountNumber);
+
+    @Query("SELECT a.customer.username FROM Account a WHERE a.iban = :iban AND a.customer.cnic = :cnic")
+    String findUsernameByIbanAndCnic(@Param("iban") String iban, @Param("cnic") Long cnic);
+
 }

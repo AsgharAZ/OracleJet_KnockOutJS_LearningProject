@@ -1,7 +1,10 @@
 <div class="dashboard-bg-wrapper">
   <div class="dashboard-content-box oj-hybrid-padding" style="display: flex; flex-direction: row; align-items: stretch;">
     <div style="flex: 0.45; display: flex; align-items: center; justify-content: center; border-right: 1px solid #eee;">
-      <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">Login</h1>
+      <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700; cursor: pointer; user-select: none; transition: all 0.3s ease;"
+          data-bind="click: toggleTheme, style: { color: isPremiumTheme() ? '#e1b838' : '#6e1e7d' }, attr: { title: isPremiumTheme() ? 'Click to switch to Normal theme' : 'Click to switch to Premium theme' }">
+        Login
+      </h1>
     </div>
     <div style="flex: 0.55; padding-left: 32px; display: flex; flex-direction: column; justify-content: center;">
       <div style="margin-bottom: 18px; font-size: 0.9rem; color: #333;">You can login through Mobile banking credentials.</div>

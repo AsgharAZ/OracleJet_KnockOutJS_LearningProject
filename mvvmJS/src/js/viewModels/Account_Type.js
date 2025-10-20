@@ -68,6 +68,18 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
         : 'css/images/AccountType_Icons/Foreign-National-Icon-Unfilled.svg';
     });
 
+    self.savingsIcon = ko.computed(function() {
+      return self.selectedAccountType() === 'Savings'
+        ? 'css/images/AccountType_Icons/Savings-Icon-Filled.svg'
+        : 'css/images/AccountType_Icons/Savings-Icon-Unfilled.svg';
+    });
+
+    self.smartWalletIcon = ko.computed(function() {
+      return self.selectedAccountType() === 'Smart Wallet'
+        ? 'css/images/AccountType_Icons/SmartWallet-Icon-Filled.svg'
+        : 'css/images/AccountType_Icons/SmartWallet-Icon-Unfilled.svg';
+    });
+
     // Loading and validation states
     self.isValidatingCNIC = ko.observable(false);
     self.cnicValidationMessage = ko.observable('');
@@ -77,6 +89,8 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     self.selectIndividual = () => self.selectedAccountType('Individual');
     self.selectSoleProprietor = () => self.selectedAccountType('Sole Proprietor');
     self.selectForeignNational = () => self.selectedAccountType('Foreign National');
+    self.selectSavings = () => self.selectedAccountType('Savings');
+    self.selectSmartWallet = () => self.selectedAccountType('Smart Wallet');
 
     // Debounce timer for CNIC validation
     self.cnicValidationTimeout = null;
@@ -244,16 +258,28 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
 
     // Computed observable to determine if Next button should be enabled
     self.canProceed = ko.computed(function() {
-      // Must have selected an account type
-      if (!self.selectedAccountType()) return false;
+      // Only Individual account type can proceed
+      if (self.selectedAccountType() !== 'Individual') return false;
 
       // For Individual account type, must have valid CNIC
-      if (self.selectedAccountType() === 'Individual') {
-        return self.isCNICValid();
-      }
+      return self.isCNICValid();
+    });
 
-      // For other account types (Sole Proprietor, Foreign National), no additional validation needed
-      return true;
+    // Computed observable for dynamic placeholder text
+    self.placeholderText = ko.computed(function() {
+      const accountType = self.selectedAccountType();
+      switch(accountType) {
+        case 'Sole Proprietor':
+          return 'This is Sole Proprietor';
+        case 'Foreign National':
+          return 'This is Foreign National';
+        case 'Savings':
+          return 'This is Savings';
+        case 'Smart Wallet':
+          return 'This is Smart Wallet';
+        default:
+          return 'this is a placeholder';
+      }
     });
 
     // Back button
@@ -273,17 +299,22 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
         return;
       }
 
-      // Only validate CNIC for Individual account type
-      if (self.selectedAccountType() === 'Individual') {
-        if (!self.cnicNumber()) {
-          alert('Please enter your CNIC number.');
-          return;
-        }
+      // Only Individual account type can proceed
+      if (self.selectedAccountType() !== 'Individual') {
+        const accountType = self.selectedAccountType();
+        alert(`The ${accountType} account type is not available for registration at this time. Please select Individual to continue.`);
+        return;
+      }
 
-        if (!self.isCNICValid()) {
-          alert('Please enter a valid CNIC number that exists in our database.');
-          return;
-        }
+      // Validate CNIC for Individual account type
+      if (!self.cnicNumber()) {
+        alert('Please enter your CNIC number.');
+        return;
+      }
+
+      if (!self.isCNICValid()) {
+        alert('Please enter a valid CNIC number that exists in our database.');
+        return;
       }
 
       if (self.parent && typeof self.parent.nextStep === 'function') {

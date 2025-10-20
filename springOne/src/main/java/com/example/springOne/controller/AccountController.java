@@ -29,13 +29,13 @@ public class AccountController {
         return accountRepository.findAll();
     }
 
-    // ✅ GET accounts by customer id (optional helper endpoint)
+    // GET accounts by customer id (optional helper endpoint)
     @GetMapping("/customer/{customerId}")
     public List<Account> getAccountsByCustomer(@PathVariable("customerId") Long customerId) {
         return accountRepository.findByCustomerId(customerId);
     }
 
-    // ✅ DTO (Record) for POST request
+    // DTO (Record) for POST request
     record NewAccountRequest(
             Long account_number,
             Long customer_id,
@@ -44,20 +44,20 @@ public class AccountController {
             boolean digitally_active
     ) {}
 
-    // ✅ CREATE Account
+    // CREATE Account
     @PostMapping
     public String addAccount(@RequestBody NewAccountRequest request) {
-        // 1️⃣ Find the customer first (foreign key validation)
+        // Find the customer first (foreign key validation)
         Customer customer = customerRepository.findById(request.customer_id())
                 .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + request.customer_id()));
 
-        // 2️⃣ Check if account of same type already exists for this customer
+        // Check if account of same type already exists for this customer
         boolean exists = accountRepository.existsByCustomerAndAccountType(customer, request.account_type());
         if (exists) {
-            return "❌ This customer already has an account of this type!";
+            return "This customer already has an account of this type!";
         }
 
-        // 3️⃣ Create and save new account
+        // Create and save new account
         Account account = new Account();
         account.setAccount_number(request.account_number());
         account.setCustomer(customer);
@@ -67,21 +67,21 @@ public class AccountController {
 
         try {
             accountRepository.save(account);
-            return "✅ Account created successfully!";
+            return " Account created successfully!";
         } catch (DataIntegrityViolationException ex) {
             // This will catch any DB constraint violation (like IBAN or account number duplicate)
-            return "❌ Database constraint violation: " + ex.getMostSpecificCause().getMessage();
+            return " Database constraint violation: " + ex.getMostSpecificCause().getMessage();
         }
     }
 
-    // ✅ DELETE account by account_number
+    //  DELETE account by account_number
     @DeleteMapping("{accountNumber}")
     public String deleteAccount(@PathVariable("accountNumber") Long accountNumber) {
         accountRepository.deleteById(accountNumber);
-        return "🗑️ Account deleted successfully!";
+        return "🗑 Account deleted successfully!";
     }
 
-    // ✅ UPDATE account (e.g., change type, IBAN, or digitally_active)
+    // UPDATE account (e.g., change type, IBAN, or digitally_active)
     @PutMapping
     public String updateAccount(@RequestBody Account accountUpdate) {
         Account existingAccount = accountRepository.findById(accountUpdate.getAccount_number())
@@ -92,7 +92,7 @@ public class AccountController {
         existingAccount.setDigitally_active(accountUpdate.isDigitally_active());
 
         accountRepository.save(existingAccount);
-        return "✅ Account updated successfully!";
+        return " Account updated successfully!";
     }
 
 
@@ -118,6 +118,7 @@ public class AccountController {
         }
 
     }
+
     // VALIDATE IBAN WITH CNIC - New endpoint for frontend validation
     @GetMapping("/validate/iban/{iban}/{cnic}")
     public ValidationResponse validateIbanWithCNIC(@PathVariable("iban") String iban, @PathVariable("cnic") Long cnic) {
@@ -166,6 +167,18 @@ public class AccountController {
         return ResponseEntity.ok(username);
     }
 
+    @GetMapping("/username/{iban}/{cnic}")
+    public ResponseEntity<?> getUsernameByIbanAndCnic(
+            @PathVariable String iban,
+            @PathVariable Long cnic) {
+
+        String username = accountRepository.findUsernameByIbanAndCnic(iban, cnic);
+
+        if (username == null) {
+            return ResponseEntity.status(404).body("No user found for given IBAN and CNIC");
+        }
+        return ResponseEntity.ok(username);
+    }
 
 
 

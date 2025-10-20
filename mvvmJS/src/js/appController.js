@@ -101,12 +101,15 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // Navigate to next step
       self.nextStep = function() {
-
-
         console.log('nextStep called');
-        currentStep = self.currentStep();
+        const currentStep = self.currentStep();
         console.log('Current step:', currentStep);
-        // const currentIndex = self.steps.indexOf(currentStep);
+
+        if (!currentStep) {
+          console.error('Current step is undefined, cannot navigate');
+          return;
+        }
+
         currentIndex = self.steps.indexOf(currentStep);
         console.log('Current index:', currentIndex);
 
@@ -147,11 +150,15 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // Navigate to previous step
       self.prevStep = function() {
-
         console.log('prevStep called');
-        currentStep = self.currentStep();
+        const currentStep = self.currentStep();
         console.log('Current step:', currentStep);
-        //const currentIndex = self.steps.indexOf(currentStep); //change
+
+        if (!currentStep) {
+          console.error('Current step is undefined, cannot navigate back');
+          return;
+        }
+
         currentIndex = self.steps.indexOf(currentStep);
         console.log('Current index:', currentIndex);
         
@@ -234,8 +241,12 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
           } else {
             self.currentStep(state.id);
             // Sync global currentIndex with the current step
-            currentIndex = self.steps.indexOf(state.id);
-            self.currentIndex = currentIndex;
+            const stepIndex = self.steps.indexOf(state.id);
+            if (stepIndex !== -1) {
+              currentIndex = stepIndex;
+              self.currentIndex = stepIndex;
+              console.log('Synced currentIndex to:', currentIndex);
+            }
           }
         }
       });

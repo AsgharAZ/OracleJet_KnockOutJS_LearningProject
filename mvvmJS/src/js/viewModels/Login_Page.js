@@ -9,6 +9,49 @@ define(['knockout', 'ojs/ojlogger'], function(ko, Logger) {
 
     // password show/hide state
     self.passwordVisible = ko.observable(false);
+
+    // Theme state management
+    self.isPremiumTheme = ko.observable(false);
+
+    // Theme toggle function
+    self.toggleTheme = function(data, event) {
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+
+      const newThemeState = !self.isPremiumTheme();
+      self.isPremiumTheme(newThemeState);
+      self.applyTheme(newThemeState);
+
+      console.log('Theme toggled to:', newThemeState ? 'Premium' : 'Normal');
+      return false;
+    };
+
+    // Apply theme function
+    self.applyTheme = function(isPremium) {
+      const root = document.documentElement;
+
+      if (isPremium) {
+        // Premium theme: grayscale background + gold accent color
+        root.style.setProperty('--primary-purple', '#e1b838');
+        root.style.setProperty('--primary-green', '#e1b838');
+
+        // Apply grayscale filter to background
+        const bgWrapper = document.querySelector('.dashboard-bg-wrapper');
+        if (bgWrapper) {
+          bgWrapper.style.filter = 'grayscale(100%)';
+        }
+      } else {
+        // Normal theme: original colors + normal background
+        root.style.setProperty('--primary-purple', '#6e1e7d');
+        root.style.setProperty('--primary-green', '#1ab437');
+
+        // Remove grayscale filter from background
+        const bgWrapper = document.querySelector('.dashboard-bg-wrapper');
+        if (bgWrapper) {
+          bgWrapper.style.filter = 'none';
+        }
+      }
+    };
+
     self.togglePasswordVisibility = function (data, event) {
       self.passwordVisible(!self.passwordVisible());
       var pwd = document.getElementById('password');
