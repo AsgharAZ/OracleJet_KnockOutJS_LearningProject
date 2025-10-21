@@ -312,6 +312,19 @@ CREATE TABLE accounts (
 - Suitable for banking and financial services requiring secure customer verification
 - Can be extended for additional account management features
 
+## 🎯 Presentation
+
+View the project presentation here: **[Canva Presentation](https://www.canva.com/design/DAG1GvaYR-k/cLQ5NoZSYkMabNXnzOeGWQ/edit)**
+
+## 📊 Database Utilities
+
+The `StoredProcedure_View_MaterializedView_SummaryCode.txt` file contains comprehensive database scripts and examples including:
+- Stored procedures for customer and account creation
+- Materialized view creation for customer-account relationships
+- Sample data insertion scripts for testing
+- Database management commands and utilities
+- API endpoint examples for account summaries
+
 ## 📄 License
 
 This project is licensed under the Oracle Universal Permissive License (UPL) - see the LICENSE file for details.

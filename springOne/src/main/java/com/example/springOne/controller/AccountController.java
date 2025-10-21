@@ -154,7 +154,7 @@ public class AccountController {
     record UsernameResponse(String username, String message) {}
 
 
-    @GetMapping("/username/{cnic}/{accountNumber}")
+    @GetMapping("/username/by-account/{cnic}/{accountNumber}")
     public ResponseEntity<?> getUsernameByCnicAndAccount(
             @PathVariable Long cnic,
             @PathVariable Long accountNumber) {
@@ -167,7 +167,7 @@ public class AccountController {
         return ResponseEntity.ok(username);
     }
 
-    @GetMapping("/username/{iban}/{cnic}")
+    @GetMapping("/username/by-iban/{iban}/{cnic}")
     public ResponseEntity<?> getUsernameByIbanAndCnic(
             @PathVariable String iban,
             @PathVariable Long cnic) {

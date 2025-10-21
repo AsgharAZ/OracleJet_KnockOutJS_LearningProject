@@ -66,10 +66,23 @@ define(['knockout'], function(ko) {
       }
 
       // Use the secure endpoint that only returns username
-      const accountNumber = accountDetails.accountNumber;
       const cnic = customer.id;
 
-      fetch(`http://localhost:8080/api/v1/accounts/username/${cnic}/${accountNumber}`)
+      // Check if user selected account number or IBAN
+      let apiUrl;
+      if (accountDetails.selectedAccountType === 'accountNumber' && accountDetails.accountNumber) {
+        const accountNumber = accountDetails.accountNumber;
+        apiUrl = `http://localhost:8080/api/v1/accounts/username/by-account/${cnic}/${accountNumber}`;
+      } else if (accountDetails.selectedAccountType === 'iban' && accountDetails.ibanNumber) {
+        const iban = accountDetails.ibanNumber;
+        apiUrl = `http://localhost:8080/api/v1/accounts/username/by-iban/${iban}/${cnic}`;
+      } else {
+        self.usernameFetchMessage('✗ Invalid account details or selection type');
+        self.isLoadingUsername(false);
+        return;
+      }
+
+      fetch(apiUrl)
         .then(response => {
           if (!response.ok) {
             throw new Error('Failed to fetch username');
