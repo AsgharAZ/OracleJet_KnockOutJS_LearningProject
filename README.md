@@ -174,11 +174,13 @@ OracleJet_KnockOutJS_LearningProject/
 | GET | `/` | Get all accounts |
 | GET | `/customer/{customerId}` | Get accounts by customer |
 | POST | `/` | Create new account |
-| DELETE | `/{accountNumber}` | Delete account |
+| DELETE | `/{accountNumber}` | Delete account by account number |
 | PUT | `/` | Update account |
-| GET | `/validate/{accountNumber}/{cnic}` | Validate account with CNIC |
+| GET | `/validate/{accountNumber}/{cnic}` | Validate account number with CNIC |
 | GET | `/validate/iban/{iban}/{cnic}` | Validate IBAN with CNIC |
-| GET | `/summary/{cnic}` | Get account summary |
+| GET | `/summary/{cnic}` | Get account summary by CNIC |
+| GET | `/username/by-account/{cnic}/{accountNumber}` | Get username by CNIC and account number |
+| GET | `/username/by-iban/{iban}/{cnic}` | Get username by IBAN and CNIC |
 
 ### Request/Response Examples
 
