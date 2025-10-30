@@ -10,6 +10,8 @@ import java.util.List;
 @RequestMapping("api/v1/customers")
 public class CustomerController {
 
+    //Records are immutable data carriers that
+    // automatically generate a constructor, getters, equals(), hashCode(), and toString()
     // API Response record for consistent JSON responses
     record ApiResponse(String statusCode, String message) {}
 
@@ -58,40 +60,10 @@ public class CustomerController {
         customerRepository.deleteById(id);
     }
 
-    //UPDATE AND EDIT THE CUSTOMER INFORMATION
-//    @PutMapping("/{customerId}")
-//    public ResponseEntity<Customer> updateCustomer(@PathVariable("customerId") Long customerId, @RequestBody Customer customerUpdate){
-//        try {
-//            // Find existing customer
-//            Customer existingCustomer = customerRepository.findById(customerId).orElse(null);
-//
-//            if (existingCustomer != null) {
-//                // Update only the fields that are provided (not null or empty)
-//                if (customerUpdate.getUsername() != null && !customerUpdate.getUsername().trim().isEmpty()) {
-//                    existingCustomer.setUsername(customerUpdate.getUsername());
-//                }
-//                if (customerUpdate.getPassword() != null && !customerUpdate.getPassword().trim().isEmpty()) {
-//                    existingCustomer.setPassword(customerUpdate.getPassword());
-//                }
-//                // Note: We don't update name and phone_number from this endpoint to avoid constraint issues
-//                // These should be updated through a dedicated profile update endpoint
-//
-//                Customer savedCustomer = customerRepository.save(existingCustomer);
-//                return ResponseEntity.ok(savedCustomer);
-//            } else {
-//                return ResponseEntity.notFound().build();
-//            }
-//        } catch (Exception e) {
-//            // Log the error and return a proper error response
-//            System.err.println("Error updating customer: " + e.getMessage());
-//            e.printStackTrace();
-//            return ResponseEntity.status(500).body(null);
-//        }
-//    }
-
     // DTO for password update requests
     record PasswordUpdateRequest(String password) {}
 
+    //@RequestBody tells Spring to take the HTTP request body (usually JSON) and deserialize it into a Java object.
     @PutMapping("/{customerId}/password")
     public ResponseEntity<ApiResponse> updatePassword(@PathVariable Long customerId, @RequestBody PasswordUpdateRequest passwordRequest) {
         try {

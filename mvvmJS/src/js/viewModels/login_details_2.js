@@ -109,6 +109,7 @@ define(['knockout'], function(ko) {
         self.passwordMatchColor('#28a745'); // Green
 
         // Add light green border to re-enter password field
+        //document.getElementById('rePassword') is a DOM method that returns the HTML element whose id attribute matches the given string.
         setTimeout(function() {
           var rePwdField = document.getElementById('rePassword');
           if (rePwdField) {

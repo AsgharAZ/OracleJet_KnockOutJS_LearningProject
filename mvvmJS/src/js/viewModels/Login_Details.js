@@ -116,15 +116,16 @@ define(['knockout'], function(ko) {
       // Try multiple ways to access account details
       let accountDetails = null;
 
-      // Method 1: Through params.parent
+      // Method 1: Through params.parent, If this ViewModel has a parent (like the main registration wizard controller),
+      //and that parent contains wizardData.accountDetails,
       if (self.parent && self.parent.wizardData && self.parent.wizardData.accountDetails) {
         accountDetails = self.parent.wizardData.accountDetails();
       }
-      // Method 2: Through window.appRouter.parent
+      // Method 2: Through window.appRouter.parent, Try backup source (via global router)
       else if (window.appRouter && window.appRouter.parent && window.appRouter.parent.wizardData && window.appRouter.parent.wizardData.accountDetails) {
         accountDetails = window.appRouter.parent.wizardData.accountDetails();
       }
-      // Method 3: Try to find it in the global scope
+      // Method 3: Try to find it in the global scope, If there’s a global controllerViewModel (used in some setups), get it from them
       else if (window.controllerViewModel && window.controllerViewModel.wizardData && window.controllerViewModel.wizardData.accountDetails) {
         accountDetails = window.controllerViewModel.wizardData.accountDetails();
       }

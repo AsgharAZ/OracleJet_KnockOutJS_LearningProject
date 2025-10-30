@@ -11,22 +11,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//@RestController is designed to return data (e.g., JSON or XML) directly as the HTTP response body.
 @RestController
-@RequestMapping("api/v1/accounts")
+@RequestMapping("api/v1/accounts") //maps HTTP requests to controller methods.
 public class AccountController {
 
+    //constructor-based dependency injection (interfaces for database access)
+    //final = must be initialized only once.
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
 
+    //Spring automatically injects (passes) the actual implementations of these repositories when creating the AccountController bean.
+    //Your class only focuses on what it needs to do, not how to get what it needs, Loose Coupling, testability.
     public AccountController(AccountRepository accountRepository, CustomerRepository customerRepository) {
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
     }
 
-    // Getting All Accounts
+    // Getting All Accounts, Not used.
     @GetMapping
     public List<Account> getAccounts() {
-        return accountRepository.findAll();
+        return accountRepository.findAll(); //sends that list back as a JSON response to the client.
     }
 
     // GET accounts by customer id (optional helper endpoint)
@@ -35,7 +40,8 @@ public class AccountController {
         return accountRepository.findByCustomerId(customerId);
     }
 
-    // DTO (Record) for POST request
+    // DTO (Record) for POST request, different than AccountSummaryDTO file, where DTO serves the purpose of GETTING
+    // Data Transfer Object
     record NewAccountRequest(
             Long account_number,
             Long customer_id,
@@ -46,10 +52,11 @@ public class AccountController {
 
     // CREATE Account
     @PostMapping
+    //Spring automatically deserializes the JSON body of the incoming request into a NewAccountRequest record instance.
     public String addAccount(@RequestBody NewAccountRequest request) {
         // Find the customer first (foreign key validation)
         Customer customer = customerRepository.findById(request.customer_id())
-                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + request.customer_id()));
+                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + request.customer_id())); //preventing orphaned account creation (foreign key integrity).
 
         // Check if account of same type already exists for this customer
         boolean exists = accountRepository.existsByCustomerAndAccountType(customer, request.account_type());
@@ -65,7 +72,10 @@ public class AccountController {
         account.setIban(request.iban());
         account.setDigitally_active(request.digitally_active());
 
+        //catch block
+        //Purpose: Handles exceptions thrown in the try block so your program doesn’t crash.
         try {
+            //Put Proper HTTP RESPONSE LATER!
             accountRepository.save(account);
             return " Account created successfully!";
         } catch (DataIntegrityViolationException ex) {
@@ -74,11 +84,12 @@ public class AccountController {
         }
     }
 
-    //  DELETE account by account_number
+    // NOT USED, DELETE account by account_number
     @DeleteMapping("{accountNumber}")
     public String deleteAccount(@PathVariable("accountNumber") Long accountNumber) {
         accountRepository.deleteById(accountNumber);
-        return "🗑 Account deleted successfully!";
+        // Convert this to HTTP RESPONSE
+        return "Account deleted successfully!";
     }
 
     // UPDATE account (e.g., change type, IBAN, or digitally_active)

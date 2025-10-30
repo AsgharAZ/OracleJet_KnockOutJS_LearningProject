@@ -10,7 +10,7 @@
  */
 
 
-
+// /__AMD (Asynchronous Module Definition)__
 define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknockouttemplateutils', 'ojs/ojcorerouter', 'ojs/ojmodulerouter-adapter', 'ojs/ojknockoutrouteradapter', 'ojs/ojurlparamadapter', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojarraydataprovider',
         'ojs/ojdrawerpopup', 'ojs/ojmodule-element', 'ojs/ojknockout'],
   function(ko, Context, moduleUtils, KnockoutTemplateUtils, CoreRouter, ModuleRouterAdapter, KnockoutRouterAdapter, UrlParamAdapter, ResponsiveUtils, ResponsiveKnockoutUtils, ArrayDataProvider) {       
@@ -21,14 +21,14 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       // debugger
       this.KnockoutTemplateUtils = KnockoutTemplateUtils;
 
-      // Handle announcements sent when pages change, for Accessibility.
+      // Handle announcements sent when pages change, for Accessibility. 
+      //That block handles accessibility announcements — it’s for screen readers (ARIA live region updates)
       this.manner = ko.observable('polite');
       this.message = ko.observable();
       announcementHandler = (event) => {
           this.message(event.detail.message);
           this.manner(event.detail.manner);
       };
-
       document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
 
 
@@ -48,35 +48,13 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
           { path: 'successful_registration', detail: { label: 'successful_registration', iconClass: 'oj-ux-ico-contact' } }
       ];
 
-      // Pre-loading all viewModels using Require.JS for SRS Navigation
-      ko.components.register('login_Page', {
-        viewModel: { require: 'viewModels/login_page' },
-        template: { require: 'text!views/login_page.html' }
-      });
-
-      ko.components.register('account_type', {
-        viewModel: { require: 'viewModels/account_type' },
-        template: { require: 'text!views/account_type.html' }
-      });
-
-      ko.components.register('account_details', {
-        viewModel: { require: 'viewModels/account_details' },
-        template: { require: 'text!views/account_details.html' }
-      });
-
-      ko.components.register('login_details', {
-        viewModel: { require: 'viewModels/login_details' },
-        template: { require: 'text!views/login_details.html' }
-      });
-
-      ko.components.register('login_details-2', {
-        viewModel: { require: 'viewModels/login_details_2' },
-        template: { require: 'text!views/login_details_2.html' }
-      });
+ 
 
 // etc.
 
-
+      //const self = this; saves the current this context into self, 
+      // so inner functions (like callbacks) can still access the outer object, 
+      // since this can change inside nested scopes.
       const self = this;
 
       // Define wizard steps in order
@@ -84,11 +62,13 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // Get current step index
       self.getCurrentStepIndex = function() {
+        //picks the app router instance.
         const currentRouter = window.appRouter || router;
         console.log('Current router:', currentRouter);
         console.log('Router type:', typeof currentRouter);
         console.log('Current state method:', typeof currentRouter.currentState);
 
+        //does currentRouter exists and checks if currentRouter.currentstate is a function or not
         if (currentRouter && typeof currentRouter.currentState === 'function') {
           const currentState = currentRouter.currentState();
           console.log('Current state:', currentState);
@@ -113,6 +93,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         currentIndex = self.steps.indexOf(currentStep);
         console.log('Current index:', currentIndex);
 
+        // /Checks if the current step is not the last step and is valid.
         if (currentIndex < self.steps.length - 1 && currentIndex >= 0) {
 
 
@@ -139,6 +120,8 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
             // Then navigate
             currentRouter.go({ path: nextStep });
+            /////
+
             console.log('Navigation with path format succeeded');
           } else {
             console.error('Router go method not available. Router:', currentRouter);
@@ -185,13 +168,13 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         }
       };
 
-      // Check if current step has next step
+      // Check if current step has next step, isn't used as far as I know
       self.hasNextStep = function() {
         const currentIndex = self.getCurrentStepIndex();
         return currentIndex < self.steps.length - 1;
       };
 
-      // Check if current step has previous step
+      // Check if current step has previous step, isn't used as far as I know
       self.hasPrevStep = function() {
         const currentIndex = self.getCurrentStepIndex();
         return currentIndex > 0;
@@ -206,39 +189,47 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         customerData: ko.observable(null)
       };
 
-      // Router setup
+      // Router setup, creates a new router instance.
+      // CoreRouter, from ojs/ojcorerouter
       let router = new CoreRouter(navData, {
-        urlAdapter: new UrlParamAdapter()
+        urlAdapter: new UrlParamAdapter() //tells the router how to manage URLs, PathAdapter would use normal path segments compared to query ones
       });
       router.sync();
 
-      // add these after router.sync();
-      window.appRouter = router;          // allow other VMs to use the same router instance
-      window.controllerViewModel = self;  // allow other VMs to access the controller instance
-      // Set parent on router for fallback access
+
+// It connects the router to your main ViewModel (controller) and keeps the wizard state in sync whenever navigation changes.
+// other ViewModels or modules in your app access the same router instance (shared navigation).
+
+
+      //
+      window.appRouter = router;          // allow other ViewModelss to use the same router instance
+      window.controllerViewModel = self;  // allow other VMs to access the controller instance, Exposes the ControllerViewModel instance globally.
+      // Set parent on router for fallback access,       //(a fallback linkage).
       router.parent = self;
-      // oj.Router.rootInstance = router;   // optional but useful for compatibility with code that uses oj.Router.rootInstance
+
 
       // Subscribe to router state changes after router is created
+      //router.currentState is a Knockout observable that updates whenever the user navigates to a new route.
       router.currentState.subscribe(function(state) {
         console.log('Router state changed:', state);
         console.log('State details:', {
-          id: state.id,
-          path: state.path,
-          detail: state.detail,
-          fullState: state
+          id: state.id, // route ID (like 'account_details')
+          path: state.path, // URL path
+          detail: state.detail, // route metadata (labels, icons)
+          fullState: state // the entire state object
         });
+        // ensures the new state is valid and has an ID, then updates it.
         if (state && state.id) {
           console.log('Setting current step to:', state.id);
 
-          // Reset wizard state when returning to login page
+          // RESETS wizard state when returning to login page
           if (state.id === 'login_Page') {
             console.log('Returned to login page, resetting wizard state');
             self.currentStep(self.steps[0]); // Reset to first wizard step
             self.currentIndex = 0;
             currentIndex = 0; // Reset the global currentIndex variable
             console.log('Reset currentIndex to:', currentIndex);
-          } else {
+          } else { //OTHERWISE, normal state change
             self.currentStep(state.id);
             // Sync global currentIndex with the current step
             const stepIndex = self.steps.indexOf(state.id);
@@ -270,7 +261,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         return originalGo(config);
       };
 
-      // Also listen for ojRouter events
+      // Also listen for ojRouter events, like route or page changes, listener updates your current observeable
       document.addEventListener('ojRouterStateChanged', function(event) {
         console.log('ojRouterStateChanged event:', event.detail);
         if (event.detail.stateId) {
@@ -283,9 +274,11 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       // Initial currentStep is already set to first step above
 
       // Pass the ControllerViewModel instance as $parent
+      //ModuleRouterAdapter links the router to OJET’s module system, which loads the correct HTML/JS module for each route.
       this.moduleAdapter = new ModuleRouterAdapter(router, {
         params: { parent: self }
       });
+      //params: { parent: self } passes this controller as $parent to those modules — letting nested modules call parent methods (like nextStep()).
 
       this.selection = new KnockoutRouterAdapter(router);
 

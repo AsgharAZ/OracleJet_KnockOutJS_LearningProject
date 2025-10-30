@@ -18,7 +18,21 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByIban(String iban);
 
-    // ✅ Use correct property names
+    // JPQL - different than PSQL being used here. Object-O
+    // Hibernate will turn to SQL in runtime.
+
+    // SELECT new - This projects the query results directly into a AccountSummaryDTO object
+    // This is a powerful feature for fetching specific data
+    // and avoiding the overhead of fetching entire entity objects.
+    //Creates a new DTO object
+
+    //JOIN a.customer c → joins with the associated Customer entity
+    // (based on the relationship defined in your Account entity).
+    //FROM account a
+    //JOIN customer c ON a.customer_id = c.id
+    
+    //: is a paramater placeholder (different from positional placeholder)
+    //
     @Query("""
         SELECT new com.example.springOne.dto.AccountSummaryDTO(
             c.id, c.username, c.name, a.account_number, a.accountType
@@ -27,9 +41,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
         JOIN a.customer c
         WHERE c.id = :cnic
     """)
+    //c.id = ? -> SQL equivalent, filled in run time.
+    //“Find all accounts where the associated customer’s ID equals the CNIC value provided.”
     List<AccountSummaryDTO> findAccountSummaryByCnic(@Param("cnic") Long cnic);
 
-    // ✅ Custom query to find username by CNIC and account number
+    // Custom query to find username by CNIC and account number
     @Query("""
         SELECT c.username
         FROM Account a

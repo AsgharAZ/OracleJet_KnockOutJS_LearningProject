@@ -4,7 +4,13 @@ import jakarta.validation.constraints.*;
 
 import java.util.Objects;
 
+
+//The entity is a plain Java object (POJO) that represents a table in your database.
+// You define the fields and relationships using JPA annotations.
+
 @Entity
+//Represents a table in the database.
+//Each instance of the entity corresponds to a row.
 
 //tells JPA (and your database) to enforce a composite uniqueness constraint.
 //One user cannot have two accounts with the same account_type
@@ -14,7 +20,6 @@ import java.util.Objects;
                 @UniqueConstraint(columnNames = {"User_id", "Account_type"})
         }
 )
-//Perhaps add a custom message later
 
 
 public class Account {
@@ -47,6 +52,7 @@ public class Account {
 
     @PrePersist //automatically before the entity is inserted (saved for the first time)
     @PreUpdate //Runs automatically before an existing entity is updated
+    //regex is a pattern matching language
     private void formatIban() {
         if (iban != null) {
             iban = iban.toUpperCase().replaceAll("\\s+", ""); // normalize case and remove spaces
@@ -107,6 +113,7 @@ public class Account {
         return accountType == account.accountType && digitally_active == account.digitally_active && Objects.equals(account_number, account.account_number) && Objects.equals(customer, account.customer) && Objects.equals(iban, account.iban);
     }
 
+    //quickly locate objects.
     @Override
     public int hashCode() {
         return Objects.hash(account_number, customer, accountType, iban, digitally_active);

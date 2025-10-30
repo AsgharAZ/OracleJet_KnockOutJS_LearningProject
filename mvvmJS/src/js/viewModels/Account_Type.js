@@ -1,21 +1,25 @@
 define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
   function AccountTypeViewModel(params) {
+    //params are passed from the router’s module adapter ({ parent: self }
     const self = this;
 
     console.log('>>> AccountTypeViewModel instantiated. params =', params);
 
     // self.parent = (params && params.parent) ? params.parent : null;
 
+    // There are so many console logs cause I was having difficulty in navigating. 
     console.log(params && params.parent);
     console.log(params);
     console.log(params.parent);
 
 
     // Try to get parent from params first
+    //Ensures the ViewModel has access to the parent controller, which manages navigation (nextStep(), prevStep()).
     if (params && params.parent) {
       self.parent = params.parent;
       console.log("✅ Parent received via params:", self.parent);
     } else {
+      //Tries multiple fallbacks if the parameter isn’t passed (useful when navigating or debugging).
       // Fallback: try to get parent from global appRouter
       if (window.appRouter && window.appRouter.parent) {
         self.parent = window.appRouter.parent;
@@ -40,6 +44,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     self.cnicNumberFormatted = ko.observable('');
 
     // Computed observable to determine if CNIC field should be shown
+    //These control conditional rendering in the UI.
     self.showCNICField = ko.computed(function() {
       return self.selectedAccountType() === 'Individual';
     });
@@ -106,9 +111,18 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
       }
 
       // Remove dashes for API call
+      // .replace(/-/g, '') uses a regular expression:
+      // / and / → mark the start and end of the regex pattern.
+      // - → matches the dash character.
+      // g (global flag) → means replace all dashes, not just the first one.
+      // '' → replace each dash with an empty string (i.e., remove it).
       const cleanCNIC = cnic.replace(/-/g, '');
 
       // Basic format validation
+      // /^ → start of the string
+      // \d → matches a digit (0–9)
+      // {13} → exactly 13 digits in a row
+      // $/ → end of the string
       const cnicPattern = /^\d{13}$/;
       if (!cnicPattern.test(cleanCNIC)) {
         self.cnicValidationMessage('Please enter a valid 13-digit CNIC number.');
@@ -128,21 +142,24 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
       // Set new timeout for debouncing (500ms)
       self.cnicValidationTimeout = setTimeout(() => {
         // Make API call to validate CNIC using new endpoint
-        fetch(`http://localhost:8080/api/v1/customers/validate/${cleanCNIC}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Failed to validate CNIC');
+        fetch(`http://localhost:8080/api/v1/customers/validate/${cleanCNIC}`) //Sends an HTTP GET request to your backend endpoint.
+          .then(response => { //This handles the HTTP response object returned by the server.
+            if (!response.ok) { //response.ok → is true if status code is between 200–299.
+              throw new Error('Failed to validate CNIC'); //If not OK → it throws an error to jump to .catch(...).
             }
-            return response.json();
+            return response.json(); //Converts JSON text to JS object
           })
           .then(data => {
             console.log('CNIC Validation API Response:', data);
 
             if (data.statusCode === 'SUCCESS') {
               self.cnicValidationMessage('✓ CNIC verified successfully');
-              self.isCNICValid(true);
-              self.setValidCNICBorder();
+              self.isCNICValid(true); //Mark CNIC as valid (true).
+              self.setValidCNICBorder(); //Turn border light green using setValidCNICBorder().
 
+
+              //It saves basic info (CNIC, username) to a shared object in the parent view model (the wizard controller).
+              //This allows later screens (like account details) to access the same validated data.
               // Store customer data for later use in shared wizard data
               if (self.parent && self.parent.wizardData) {
                 // Create a customer object from the validation data
@@ -159,27 +176,30 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
                 console.log("Parent object:", self.parent);
                 console.log("Parent wizardData:", self.parent ? self.parent.wizardData : 'No parent');
               }
-            } else {
+            } else { //incase of backend sending error
               self.cnicValidationMessage(`✗ ${data.message}`);
-              self.isCNICValid(false);
+              self.isCNICValid(false); //turns the border red
               self.setInvalidCNICBorder();
             }
           })
-          .catch(error => {
+          .catch(error => { //The API request fails (e.g., network issue, 404, server down),
             console.error('CNIC validation error:', error);
             self.cnicValidationMessage('✗ Error validating CNIC. Please try again.');
             self.isCNICValid(false);
             self.resetCNICBorder();
           })
-          .finally(() => {
-            self.isValidatingCNIC(false);
+          .finally(() => { //This runs no matter what (success or failure).
+            self.isValidatingCNIC(false); //it stops the "loading" state after the API call finishes, no matter what happened.
           });
       }, 500); // 500ms debounce delay
     };
 
     // Set light green border for valid CNIC
     self.setValidCNICBorder = function() {
-      setTimeout(() => {
+      setTimeout(() => { //Defines a function that will slightly delay its execution
+        //→ Try to get the CNIC field by id="cnicNumber"
+        // → If not found, look for any input whose data-bind includes "cnicNumber".
+        //In JavaScript, document is a global object that represents the entire web page currently loaded in the browser (the DOM, or Document Object Model).
         const cnicField = document.getElementById('cnicNumber') || document.querySelector('input[data-bind*="cnicNumber"]');
         if (cnicField) {
           cnicField.style.borderColor = '#90EE90'; // Light green
@@ -190,6 +210,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     // Set red border for invalid CNIC
     self.setInvalidCNICBorder = function() {
       setTimeout(() => {
+        //In JavaScript, document is a global object that represents the entire web page currently loaded in the browser (the DOM, or Document Object Model).
         const cnicField = document.getElementById('cnicNumber') || document.querySelector('input[data-bind*="cnicNumber"]');
         if (cnicField) {
           cnicField.style.borderColor = '#dc3545'; // Red
@@ -209,7 +230,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
 
     // CNIC formatting function
     self.formatCNIC = function(value) {
-      // Remove all non-digits
+      // Remove all non-digits, re
       let digits = value.replace(/\D/g, '');
 
       // Limit to 13 digits
@@ -228,6 +249,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
     };
 
     // Handle CNIC input with formatting
+    //event handler function — it runs whenever the CNIC input field changes (e.g., when the user types something).
     self.handleCNICInput = function(data, event) {
       const input = event.target;
       let value = input.value;
@@ -284,6 +306,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
 
     // Back button
     self.goBack = function () {
+      //defines a function called goBack (attached to the ViewModel).
       if (self.parent && typeof self.parent.prevStep === 'function') {
         console.log('Back clicked, calling parent.prevStep()');
         self.parent.prevStep();
@@ -299,7 +322,7 @@ define(['knockout', 'ojs/ojmodule-element-utils'], function (ko, moduleUtils) {
         return;
       }
 
-      // Only Individual account type can proceed
+      // Only Individual account type can proceed (shouldn't run ideally, for future)
       if (self.selectedAccountType() !== 'Individual') {
         const accountType = self.selectedAccountType();
         alert(`The ${accountType} account type is not available for registration at this time. Please select Individual to continue.`);

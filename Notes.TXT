@@ -1,0 +1,21 @@
+RestController is a meta-annotation,
+@Target({ElementType.TYPE}) = Specifies that @RestController can only be applied to classes or interfaces.
+Where annotation can be used.
+
+
+@Retention(RetentionPolicy.RUNTIME) = The annotation is retained at runtime, 
+so Spring can read it via reflection.
+Source - only in source code discarded by compiler,
+ class - available in class not available in runtime
+runtime - stored in class file, and available at runtime.
+
+Reflection - A mechanism in Java to inspect classes, methods, fields, and annotations at runtime.
+
+@Documented → Makes the annotation visible in generated docs (Javadoc).
+
+avadoc.
+@Controller = 
+
+@AliasFor lets one annotation map its attribute to another annotation’s attribute.
+
+In @RestController, it makes value() act as the value of @Controller, so you can set the bean name via @RestController("myController") instead of separately on @Controller.
